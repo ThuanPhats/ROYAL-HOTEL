@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - QLKhachSan Premium</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome v6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation Menu -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-hotel me-2"></i>ROYAL HOTEL
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Home")">
+                        <i class="fa-solid fa-gauge"></i>Sơ đồ & Dashboard
+                    </a>
+                </li>
+                @if (User.IsInRole("Admin") || User.IsInRole("QuanLy"))
+                {
+                    <li class="sidebar-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Report" ? "active" : "")">
+                        <a href="@Url.Action("Report", "Home")">
+                            <i class="fa-solid fa-chart-line"></i>Báo cáo Thống kê
+                        </a>
+                    </li>
+                }
+                <li class="sidebar-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Room" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Room")">
+                        <i class="fa-solid fa-door-open"></i>Quản lý Phòng
+                    </a>
+                </li>
+                <li class="sidebar-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Booking" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Booking")">
+                        <i class="fa-solid fa-calendar-days"></i>Đặt phòng (Booking)
+                    </a>
+                </li>
+                <li class="sidebar-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "CheckInCheckOut" ? "active" : "")">
+                    <a href="@Url.Action("Index", "CheckInCheckOut")">
+                        <i class="fa-solid fa-bell"></i>Lưu trú & Check-in
+                    </a>
+                </li>
+                <li class="sidebar-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Service" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Service")">
+                        <i class="fa-solid fa-concierge-bell"></i>Dịch vụ Khách sạn
+                    </a>
+                </li>
+                <li class="sidebar-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Customer")">
+                        <i class="fa-solid fa-users"></i>Khách hàng
+                    </a>
+                </li>
+                @if (User.IsInRole("Admin") || User.IsInRole("QuanLy"))
+                {
+                    <li class="sidebar-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Employee" ? "active" : "")">
+                        <a href="@Url.Action("Index", "Employee")">
+                            <i class="fa-solid fa-id-card-clip"></i>Nhân sự & Ca trực
+                        </a>
+                    </li>
+                }
+                <li class="sidebar-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Asset" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Asset")">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>Thiết bị & Bảo trì
+                    </a>
+                </li>
+                <li class="sidebar-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Billing" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Billing")">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>Hóa đơn & VAT
+                    </a>
+                </li>
+            </ul>
+            <div class="p-3 border-top border-secondary text-center small text-muted">
+                v1.0.0 &copy; 2026 Royal Hotel
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="navbar-custom">
+                <div class="d-flex align-items-center">
+                    <h4 class="m-0 font-weight-bold" style="font-family: 'Outfit', sans-serif;">@ViewData["Title"]</h4>
+                </div>
+                <div class="d-flex align-items-center">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="dropdown">
+                            <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-regular fa-circle-user me-2 fs-5 text-primary"></i>
+                                <span>Xin chào, <strong>@User.Identity.Name</strong></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item text-muted" href="#"><i class="fa-solid fa-user-gear me-2"></i>Tài khoản</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="d-inline">
+                                        <button type="submit" class="dropdown-item text-danger"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </header>
+
+            <div class="content-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+                        <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                        <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <!-- Microsoft SignalR Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

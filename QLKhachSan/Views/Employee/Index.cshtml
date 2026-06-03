@@ -1,0 +1,192 @@
+@model IEnumerable<QLKhachSan.Models.NhanVien>
+@{
+    ViewData["Title"] = "Quản lý nhân viên";
+    bool showDeleted = ViewBag.ShowDeleted ?? false;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="font-weight-bold text-dark m-0" style="font-family: 'Outfit', sans-serif;">
+                <i class="fa-solid fa-user-tie text-primary me-2"></i>Quản lý Nhân sự & Phân ca
+            </h3>
+            <p class="text-muted mb-0 small">Quản lý hồ sơ nhân viên khách sạn, bộ phận chuyên trách và thông tin liên lạc.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("ScheduleIndex")" class="btn btn-outline-primary rounded-3">
+                <i class="fa-solid fa-calendar-days me-2"></i>Lịch phân ca & Chấm công
+            </a>
+            @if (showDeleted)
+            {
+                <a href="@Url.Action("Index", new { showDeleted = false })" class="btn btn-outline-secondary rounded-3">
+                    <i class="fa-solid fa-eye me-2"></i>Ẩn nhân sự nghỉ việc
+                </a>
+            }
+            else
+            {
+                <a href="@Url.Action("Index", new { showDeleted = true })" class="btn btn-outline-secondary rounded-3">
+                    <i class="fa-solid fa-eye-slash me-2"></i>Hiển thị nhân sự đã nghỉ việc
+                </a>
+            }
+            <a href="@Url.Action("Create")" class="btn btn-primary rounded-3">
+                <i class="fa-solid fa-user-plus me-2"></i>Thêm nhân viên mới
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm border-0" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+        <!-- Bộ lọc nhanh -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="employeeSearch" class="form-control border-start-0 rounded-end-3" placeholder="Tìm kiếm theo mã NV, tên, SĐT..." />
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <select id="filterDepartment" class="form-select rounded-3">
+                    <option value="">-- Tất cả bộ phận --</option>
+                    @if (Model != null)
+                    {
+                        var depts = Model.Select(e => e.BoPhan?.TenBoPhan).Distinct().Where(d => d != null);
+                        foreach (var dept in depts)
+                        {
+                            <option value="@dept">@dept</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive border rounded-3">
+            <table class="table table-hover align-middle mb-0" id="employeesTable">
+                <thead class="table-light">
+                    <tr>
+                        <th width="100" class="text-center">Mã NV</th>
+                        <th>Họ và tên</th>
+                        <th>Bộ phận / Chức vụ</th>
+                        <th>Liên hệ</th>
+                        <th class="text-center">Ngày vào làm</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th width="150" class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        string rowClass = item.IsDeleted ? "opacity-60 bg-light-subtle" : "";
+                        
+                        <tr class="employee-row @rowClass" data-search="@(item.MaNV.ToLower() + " " + item.HoTen.ToLower() + " " + (item.Sdt ?? ""))" data-dept="@(item.BoPhan?.TenBoPhan ?? "")">
+                            <td class="text-center font-weight-bold text-secondary">@item.MaNV</td>
+                            <td>
+                                <strong class="text-dark">@item.HoTen</strong>
+                                <div class="small text-muted">NS: @(item.NgaySinh?.ToString("dd/MM/yyyy") ?? "N/A")</div>
+                            </td>
+                            <td>
+                                <div><span class="badge bg-primary rounded-pill px-3 py-1 mb-1">@(item.BoPhan?.TenBoPhan ?? "N/A")</span></div>
+                                <small class="text-muted"><i class="fa-solid fa-address-card me-1"></i>@(item.ChucVu?.TenChucVu ?? "N/A")</small>
+                            </td>
+                            <td>
+                                <div class="small"><i class="fa-solid fa-phone text-muted small me-1"></i> @(item.Sdt ?? "N/A")</div>
+                                <div class="small text-muted"><i class="fa-solid fa-envelope text-muted small me-1"></i> @(item.Email ?? "N/A")</div>
+                            </td>
+                            <td class="text-center text-muted small">
+                                @item.NgayVaoLam.ToString("dd/MM/yyyy")
+                            </td>
+                            <td class="text-center">
+                                @if (item.IsDeleted)
+                                {
+                                    <span class="badge bg-danger rounded-pill px-2 py-1">Đã nghỉ việc</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success rounded-pill px-2 py-1">Đang làm việc</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-outline-primary btn-sm rounded-2" title="Chi tiết">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-outline-warning btn-sm rounded-2" title="Chỉnh sửa">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    
+                                    @if (item.IsDeleted)
+                                    {
+                                        <form asp-action="Restore" method="post" style="display:inline;" onsubmit="return confirm('Khôi phục hồ sơ nhân viên này?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-outline-success btn-sm rounded-2" title="Khôi phục">
+                                                <i class="fa-solid fa-trash-arrow-up"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="SoftDelete" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn cho nhân viên này thôi việc (xóa mềm)?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-2" title="Thôi việc">
+                                                <i class="fa-solid fa-user-minus"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <i class="fa-solid fa-users-slash fs-2 text-secondary mb-3 d-block"></i>
+                                Không tìm thấy nhân sự nào.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .opacity-60 {
+        opacity: 0.6;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Live search and filter
+            $('#employeeSearch, #filterDepartment').on('keyup change', function () {
+                let searchVal = $('#employeeSearch').val().toLowerCase();
+                let deptVal = $('#filterDepartment').val();
+
+                $('.employee-row').each(function () {
+                    let searchData = $(this).data('search');
+                    let deptData = $(this).data('dept');
+
+                    let matchesSearch = searchData.indexOf(searchVal) > -1;
+                    let matchesDept = deptVal === "" || deptData === deptVal;
+
+                    if (matchesSearch && matchesDept) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+        });
+    </script>
+}

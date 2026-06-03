@@ -1,0 +1,170 @@
+@model QLKhachSan.Models.PhieuLuuTru
+@{
+    ViewData["Title"] = "Tách Hóa Đơn - Folio " + Model.MaFolio;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h5 class="m-0 font-weight-bold" style="font-family: 'Outfit', sans-serif;">
+            <a href="@Url.Action("FolioDetails", "CheckInCheckOut", new { id = Model.Id })" class="text-decoration-none text-muted">
+                <i class="fa-solid fa-arrow-left me-2"></i>Quay lại Folio
+            </a> | Tách Hóa Đơn (Split Bill)
+        </h5>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm border-0" role="alert">
+            <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h5 class="font-weight-bold mb-4 text-dark" style="font-family: 'Outfit', sans-serif;">
+                    <i class="fa-solid fa-list-check text-primary me-2"></i>Chọn các mục muốn tách
+                </h5>
+
+                <form asp-action="SplitBill" method="post" id="splitForm">
+                    <input type="hidden" name="folioId" value="@Model.Id" />
+                    
+                    <div class="table-responsive border rounded-3 mb-4">
+                        <table class="table table-hover align-middle mb-0" id="invoiceDetailsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="40" class="text-center">
+                                        <input type="checkbox" class="form-check-input" id="selectAll" />
+                                    </th>
+                                    <th>Hạng mục</th>
+                                    <th>Nội dung</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-end">Đơn giá</th>
+                                    <th class="text-end">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.ChiTietFolios.OrderBy(c => c.NgayGhiNhan))
+                                {
+                                    string badgeClass = "";
+                                    switch (item.LoaiChiTiet)
+                                    {
+                                        case "TienPhong": badgeClass = "bg-primary"; break;
+                                        case "PhuThu": badgeClass = "bg-danger"; break;
+                                        case "DichVu": badgeClass = "bg-success"; break;
+                                        case "GiamTru": badgeClass = "bg-secondary"; break;
+                                    }
+                                    <tr>
+                                        <td class="text-center">
+                                            <input type="checkbox" name="selectedChiTietIds" value="@item.Id" class="form-check-input item-checkbox" data-amount="@item.ThanhTien" />
+                                        </td>
+                                        <td>
+                                            <span class="badge @badgeClass rounded-pill">@item.LoaiChiTiet</span>
+                                        </td>
+                                        <td>@item.NoiDung</td>
+                                        <td class="text-center">@item.SoLuong</td>
+                                        <td class="text-end text-muted">@item.DonGia.ToString("N0") đ</td>
+                                        <td class="text-end font-weight-bold text-dark item-total">@item.ThanhTien.ToString("N0") đ</td>
+                                    </tr>
+                                }
+                                @if (!Model.ChiTietFolios.Any())
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">Không có hạng mục chi phí nào.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card bg-light border-0 rounded-3 p-3 mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-7">
+                                <label for="newCustomerName" class="form-label font-weight-bold text-dark small">
+                                    <i class="fa-solid fa-user-plus text-primary me-2"></i>Họ tên khách hàng nhận hóa đơn được tách:
+                                </label>
+                                <input type="text" name="newCustomerName" id="newCustomerName" class="form-control rounded-3 border-secondary-subtle" placeholder="Nhập tên khách hàng mới..." required />
+                                <div class="form-text small text-muted">Hệ thống sẽ tạo một Folio phụ riêng cho khách hàng này với các mục đã chọn.</div>
+                            </div>
+                            <div class="col-md-5 text-md-end mt-3 mt-md-0">
+                                <div class="small text-muted mb-1">Tổng tiền được chọn tách:</div>
+                                <div class="fs-4 font-weight-bold text-primary" id="selectedTotal">0 đ</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="@Url.Action("FolioDetails", "CheckInCheckOut", new { id = Model.Id })" class="btn btn-light px-4 py-2 rounded-3 border">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-primary px-4 py-2 rounded-3 font-weight-bold" id="btnSubmit" disabled>
+                            <i class="fa-solid fa-scissors me-2"></i>Thực hiện tách hóa đơn
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-primary text-white position-sticky" style="top: 20px;">
+                <h5 class="font-weight-bold mb-4" style="font-family: 'Outfit', sans-serif;">
+                    <i class="fa-solid fa-info-circle me-2"></i>Hướng dẫn tách hóa đơn
+                </h5>
+                <p class="small opacity-90">Tách hóa đơn (Split Bill) là nghiệp vụ cho phép chuyển một phần chi phí từ hóa đơn chính (Folio chính) sang một Folio phụ mới cho thành viên khác trong đoàn lưu trú hoặc theo yêu cầu thanh toán riêng của khách hàng.</p>
+                <hr class="border-light opacity-50" />
+                <ul class="list-unstyled mb-0 d-flex flex-column gap-3 small">
+                    <li class="d-flex gap-2">
+                        <i class="fa-solid fa-square-check mt-1"></i>
+                        <span><strong>Bước 1:</strong> Tích chọn các dòng chi phí muốn tách trong danh sách bên trái.</span>
+                    </li>
+                    <li class="d-flex gap-2">
+                        <i class="fa-solid fa-keyboard mt-1"></i>
+                        <span><strong>Bước 2:</strong> Nhập họ tên khách hàng đại diện cho hóa đơn mới.</span>
+                    </li>
+                    <li class="d-flex gap-2">
+                        <i class="fa-solid fa-receipt mt-1"></i>
+                        <span><strong>Bước 3:</strong> Nhấn "Thực hiện tách". Hệ thống sẽ tự động trừ chi phí bên Folio hiện tại và gán sang Folio mới.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Select All Checkbox logic
+            $('#selectAll').on('change', function () {
+                $('.item-checkbox').prop('checked', this.checked).trigger('change');
+            });
+
+            // Handle checkbox changes to update total and enable/disable submit button
+            $('.item-checkbox').on('change', function () {
+                let total = 0;
+                let count = 0;
+
+                $('.item-checkbox:checked').each(function () {
+                    total += parseFloat($(this).data('amount')) || 0;
+                    count++;
+                });
+
+                // Update total display
+                $('#selectedTotal').text(total.toLocaleString('vi-VN') + ' đ');
+
+                // Enable/disable submit button
+                if (count > 0) {
+                    $('#btnSubmit').removeAttr('disabled');
+                } else {
+                    $('#btnSubmit').attr('disabled', 'disabled');
+                }
+
+                // Sync selectAll checkbox state
+                if ($('.item-checkbox:checked').length === $('.item-checkbox').length) {
+                    $('#selectAll').prop('checked', true);
+                } else {
+                    $('#selectAll').prop('checked', false);
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,116 @@
+@model QLKhachSan.Models.PhieuLuuTru
+@{
+    ViewData["Title"] = "Kết toán thanh toán & Check-out - Phòng " + Model.Phong?.MaPhong;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h5 class="m-0 font-weight-bold" style="font-family: 'Outfit', sans-serif;">
+        <a href="@Url.Action("FolioDetails", new { id = Model.Id })" class="text-decoration-none text-muted"><i class="fa-solid fa-arrow-left me-2"></i>Quay lại Folio</a> | Kết toán thanh toán & Check-out
+    </h5>
+</div>
+
+<div class="row g-4">
+    <!-- Cột trái: Bảng kê chi phí Folio -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <h5 class="font-weight-bold mb-4" style="font-family: 'Outfit', sans-serif;"><i class="fa-solid fa-calculator text-primary me-2"></i>Bảng kê thanh toán cuối cùng</h5>
+            
+            <div class="table-responsive border rounded-3 mb-3">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Hạng mục</th>
+                            <th>Nội dung chi phí</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-end">Đơn giá</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ChiTietFolios.OrderBy(c => c.NgayGhiNhan))
+                        {
+                            string badgeClass = "";
+                            switch (item.LoaiChiTiet)
+                            {
+                                case "TienPhong": badgeClass = "bg-primary"; break;
+                                case "PhuThu": badgeClass = "bg-danger"; break;
+                                case "DichVu": badgeClass = "bg-success"; break;
+                                case "GiamTru": badgeClass = "bg-secondary"; break;
+                            }
+                            <tr>
+                                <td>
+                                    <span class="badge @badgeClass rounded-pill">@item.LoaiChiTiet</span>
+                                </td>
+                                <td>@item.NoiDung</td>
+                                <td class="text-center">@item.SoLuong</td>
+                                <td class="text-end">@item.DonGia.ToString("N0") đ</td>
+                                <td class="text-end font-weight-bold">@item.ThanhTien.ToString("N0") đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Tính toán tổng nợ -->
+            <div class="row justify-content-end text-end g-2">
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                        <span class="text-muted">Tổng cộng dịch vụ & phòng:</span>
+                        <strong>@Model.ChiTietFolios.Sum(c => c.ThanhTien).ToString("N0") đ</strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                        <span class="text-muted">Tổng giảm trừ (đặt cọc/voucher):</span>
+                        <strong class="text-danger">- @Model.GiamTru.ToString("N0") đ</strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 text-danger fs-4 font-weight-bold">
+                        <span>TỔNG THANH TOÁN:</span>
+                        <span>@((Model.ChiTietFolios.Sum(c => c.ThanhTien) - Model.GiamTru).ToString("N0")) đ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cột phải: Form thanh toán & thông tin lưu trú -->
+    <div class="col-lg-4">
+        <!-- Form kết toán -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <h5 class="font-weight-bold mb-3" style="font-family: 'Outfit', sans-serif;"><i class="fa-solid fa-credit-card text-primary me-2"></i>Thanh toán & Trả phòng</h5>
+            
+            <form asp-action="CheckOut" method="post">
+                <input type="hidden" name="folioId" value="@Model.Id" />
+
+                <!-- Chọn hình thức thanh toán -->
+                <div class="mb-3">
+                    <label for="paymentMethodId" class="form-label font-weight-bold small">Hình thức thanh toán *</label>
+                    <select name="paymentMethodId" id="paymentMethodId" class="form-select border-2 border-primary" required>
+                        <option value="1">Tiền mặt</option>
+                        <option value="2">Chuyển khoản ngân hàng</option>
+                        <option value="3">Thẻ tín dụng (Visa/Master/JCB)</option>
+                        <option value="4">Ví điện tử (MoMo/ZaloPay)</option>
+                        <option value="5">Direct Billing (Doanh nghiệp ký nợ)</option>
+                    </select>
+                </div>
+
+                <!-- Ghi chú thanh toán -->
+                <div class="mb-4">
+                    <label for="ghiChu" class="form-label font-weight-bold small">Ghi chú thanh toán</label>
+                    <textarea name="ghiChu" id="ghiChu" class="form-control" rows="2" placeholder="Ví dụ: Khách thanh toán thừa, ghi nhận thẻ vip..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-danger btn-lg w-100 py-3 font-weight-bold shadow-sm" onsubmit="return confirm('Bạn có chắc chắn muốn kết toán và cho phòng check-out giải phóng ngay bây giờ?');">
+                    <i class="fa-solid fa-right-from-bracket me-2"></i> HOÀN TẤT CHECK-OUT & PHÒNG
+                </button>
+            </form>
+        </div>
+
+        <!-- Tóm tắt phòng dọn -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-light">
+            <h6 class="font-weight-bold mb-2">Quy trình dọn phòng sau check-out:</h6>
+            <p class="small text-muted mb-0">
+                Sau khi bấm hoàn tất, phòng sẽ tự động chuyển sang trạng thái **"Trống - Chưa dọn"** (Màu vàng trên sơ đồ). 
+                Nhân viên buồng phòng sẽ nhận được tín hiệu SignalR real-time báo dọn phòng lập tức.
+            </p>
+        </div>
+    </div>
+</div>

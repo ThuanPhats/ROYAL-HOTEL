@@ -1,0 +1,76 @@
+@model IEnumerable<QLKhachSan.Models.PhieuLuuTru>
+@{
+    ViewData["Title"] = "Danh sách Lưu trú (Folio)";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h5 class="m-0 font-weight-bold" style="font-family: 'Outfit', sans-serif;"><i class="fa-solid fa-bell text-primary me-2"></i>Khách hàng đang lưu trú (Folios)</h5>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("WalkIn", "CheckInCheckOut")" class="btn btn-outline-primary">
+            <i class="fa-solid fa-person-walking me-2"></i>Check-in Walk-in (Khách vãng lai)
+        </a>
+        <a href="@Url.Action("Index", "Booking")" class="btn btn-primary-custom">
+            <i class="fa-solid fa-key me-2"></i>Check-in theo Booking
+        </a>
+    </div>
+</div>
+
+<div class="table-responsive shadow-sm border rounded-4 bg-white">
+    <table class="table table-custom table-hover">
+        <thead>
+            <tr>
+                <th>Số Phòng</th>
+                <th>Mã Folio</th>
+                <th>Khách đại diện</th>
+                <th>Giờ Check-in thực tế</th>
+                <th>Booking liên kết</th>
+                <th>Trạng thái lưu trú</th>
+                <th class="text-end">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Where(f => f.TrangThai == "DangLuuTru"))
+            {
+                <tr>
+                    <td class="font-weight-bold text-dark fs-5"><i class="fa-solid fa-door-closed text-danger me-2"></i>@item.Phong?.MaPhong</td>
+                    <td class="font-weight-bold text-muted">@item.MaFolio</td>
+                    <td>
+                        <div><strong>@item.KhachHang?.HoTen</strong></div>
+                        <small class="text-muted">@item.KhachHang?.CccdPassport</small>
+                    </td>
+                    <td>@item.NgayCheckInAct.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        @if (item.PhieuDatPhong != null)
+                        {
+                            <span class="badge bg-light text-primary border"><i class="fa-regular fa-calendar-check me-1"></i>@item.PhieuDatPhong.MaDatPhong</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-light text-muted border">Walk-in</span>
+                        }
+                    </td>
+                    <td>
+                        <span class="badge bg-danger fs-7 px-3 py-2 rounded-pill"><i class="fa-solid fa-circle-play me-1"></i>Đang lưu trú</span>
+                    </td>
+                    <td class="text-end">
+                        <a href="@Url.Action("FolioDetails", "CheckInCheckOut", new { id = item.Id })" class="btn btn-sm btn-outline-primary border-0 me-2">
+                            <i class="fa-solid fa-receipt me-1"></i> Quản lý Folio
+                        </a>
+                        <a href="@Url.Action("RoomChange", "CheckInCheckOut", new { id = item.Id })" class="btn btn-sm btn-outline-warning border-0 me-2" title="Đổi phòng">
+                            <i class="fa-solid fa-arrows-rotate"></i> Đổi phòng
+                        </a>
+                        <a href="@Url.Action("CalculateCheckOut", "CheckInCheckOut", new { folioId = item.Id })" class="btn btn-sm btn-danger font-weight-bold">
+                            <i class="fa-solid fa-right-from-bracket me-1"></i> Trả phòng & Thanh toán
+                        </a>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any(f => f.TrangThai == "DangLuuTru"))
+            {
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">Hiện tại không có phòng nào đang lưu trú.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

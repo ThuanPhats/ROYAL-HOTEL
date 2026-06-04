@@ -1,0 +1,114 @@
+@model QLKhachSan.Models.ChinhSachGia
+@{
+    ViewData["Title"] = "Thêm mới bảng giá";
+    var roomTypes = ViewBag.LoaiPhongs as IEnumerable<QLKhachSan.Models.LoaiPhong> ?? new List<QLKhachSan.Models.LoaiPhong>();
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-tag-fill me-2"></i>Thêm bảng giá / Chính sách giá mới</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="RatePlanCreate" method="post" asp-antiforgery="true" id="ratePlanForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="LoaiPhongId" class="form-label font-weight-bold">Áp dụng cho loại phòng</label>
+                                <select asp-for="LoaiPhongId" class="form-select" required>
+                                    <option value="">-- Chọn loại phòng --</option>
+                                    @foreach (var type in roomTypes)
+                                    {
+                                        <option value="@type.Id">@type.TenLoaiPhong</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="LoaiPhongId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="loaiGiaSelect" class="form-label font-weight-bold">Nhóm loại giá</label>
+                                <select id="loaiGiaSelect" class="form-select">
+                                    <option value="Thường">Thường (Standard)</option>
+                                    <option value="Cuối tuần">Cuối tuần (Weekend)</option>
+                                    <option value="Lễ hội">Lễ hội (Holiday)</option>
+                                    <option value="VIP">VIP</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TenChinhSach" class="form-label font-weight-bold">Tên bảng giá / Tên chính sách</label>
+                            <input asp-for="TenChinhSach" class="form-control" id="tenChinhSachInput" placeholder="Ví dụ: Giá Ngày Lễ Quốc Khánh, Giá Mùa Hè..." required />
+                            <span asp-validation-for="TenChinhSach" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="GiaApDung" class="form-label font-weight-bold">Đơn giá áp dụng / đêm</label>
+                                <div class="input-group">
+                                    <input asp-for="GiaApDung" class="form-control" type="number" min="0" placeholder="Nhập giá áp dụng..." required />
+                                    <span class="input-group-text">đ</span>
+                                </div>
+                                <span asp-validation-for="GiaApDung" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="SoDemToiThieu" class="form-label font-weight-bold">Số đêm tối thiểu</label>
+                                <input asp-for="SoDemToiThieu" class="form-control" type="number" min="1" max="30" value="1" required />
+                                <span asp-validation-for="SoDemToiThieu" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="NgayBatDau" class="form-label font-weight-bold">Ngày bắt đầu áp dụng</label>
+                                <input asp-for="NgayBatDau" class="form-control" type="date" id="ngayBatDau" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                                <span asp-validation-for="NgayBatDau" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="NgayKetThuc" class="form-label font-weight-bold">Ngày kết thúc áp dụng</label>
+                                <input asp-for="NgayKetThuc" class="form-control" type="date" id="ngayKetThuc" value="@DateTime.Today.AddDays(30).ToString("yyyy-MM-dd")" required />
+                                <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" asp-for="IsActive" id="isActive" checked />
+                                <label class="form-check-label font-weight-bold" for="isActive">Kích hoạt bảng giá ngay lập tức</label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="RatePlanIndex" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>Tạo bảng giá
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('ratePlanForm').addEventListener('submit', function(e) {
+        const start = new Date(document.getElementById('ngayBatDau').value);
+        const end = new Date(document.getElementById('ngayKetThuc').value);
+        if (end <= start) {
+            e.preventDefault();
+            alert('Lỗi: Ngày kết thúc áp dụng phải lớn hơn ngày bắt đầu!');
+            return;
+        }
+        
+        const loaiGia = document.getElementById('loaiGiaSelect').value;
+        const nameInput = document.getElementById('tenChinhSachInput');
+        if (loaiGia && !nameInput.value.includes(loaiGia)) {
+            nameInput.value += " (" + loaiGia + ")";
+        }
+    });
+</script>

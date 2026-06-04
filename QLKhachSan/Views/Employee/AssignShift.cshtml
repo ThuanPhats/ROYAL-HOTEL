@@ -1,0 +1,130 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Phân ca làm việc";
+    var employees = ViewBag.Employees as IEnumerable<QLKhachSan.Models.NhanVien> ?? new List<QLKhachSan.Models.NhanVien>();
+    var shifts = ViewBag.CaLamViecs as IEnumerable<QLKhachSan.Models.CaLamViec> ?? new List<QLKhachSan.Models.CaLamViec>();
+    
+    // Check if employeeId is passed as query parameter
+    string queryEmpId = Context.Request.Query["employeeId"];
+    int selectedEmpId = 0;
+    int.TryParse(queryEmpId, out selectedEmpId);
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-calendar-event me-2"></i>Phân ca làm việc cho nhân viên</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form id="assignShiftForm" asp-action="AssignShift" method="post" asp-antiforgery="true">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label for="employeeId" class="form-label font-weight-bold">Chọn nhân viên</label>
+                            @if (selectedEmpId > 0)
+                            {
+                                var selectedEmp = employees.FirstOrDefault(e => e.Id == selectedEmpId);
+                                if (selectedEmp != null)
+                                {
+                                    <input type="text" class="form-control bg-light" value="@selectedEmp.HoTen (@selectedEmp.MaNV)" readonly />
+                                    <input type="hidden" id="employeeId" name="employeeId" value="@selectedEmpId" />
+                                }
+                                else
+                                {
+                                    <select id="employeeId" name="employeeId" class="form-select" required>
+                                        <option value="">-- Chọn nhân viên --</option>
+                                        @foreach (var emp in employees)
+                                        {
+                                            <option value="@emp.Id">@emp.HoTen (@emp.MaNV) - @(emp.BoPhan?.TenBoPhan)</option>
+                                        }
+                                    </select>
+                                }
+                            }
+                            else
+                            {
+                                <select id="employeeId" name="employeeId" class="form-select" required>
+                                    <option value="">-- Chọn nhân viên --</option>
+                                    @foreach (var emp in employees)
+                                    {
+                                        <option value="@emp.Id">@emp.HoTen (@emp.MaNV) - @(emp.BoPhan?.TenBoPhan)</option>
+                                    }
+                                </select>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="shiftId" class="form-label font-weight-bold">Chọn ca làm việc</label>
+                            <select id="shiftId" name="shiftId" class="form-select" required>
+                                <option value="">-- Chọn ca --</option>
+                                @foreach (var shift in shifts)
+                                {
+                                    <option value="@shift.Id">@shift.TenCa (@shift.GioBatDau.ToString(@"hh\:mm") - @shift.GioKetThuc.ToString(@"hh\:mm"))</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="startDate" class="form-label font-weight-bold">Từ ngày (Ngày bắt đầu)</label>
+                                <input type="date" id="startDate" name="startDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="endDate" class="form-label font-weight-bold">Đến ngày (Để phân ca hàng loạt)</label>
+                                <input type="date" id="endDate" name="endDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label font-weight-bold">Ghi chú</label>
+                            <input type="text" id="notes" name="notes" class="form-control" placeholder="Ghi chú phân ca (nếu có)..." />
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            @if (selectedEmpId > 0)
+                            {
+                                <a asp-action="Details" asp-route-id="@selectedEmpId" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Hủy bỏ
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-action="Index" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Hủy bỏ
+                                </a>
+                            }
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-calendar-check me-1"></i>Xác nhận phân ca
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('startDate').addEventListener('change', function() {
+        document.getElementById('endDate').value = this.value;
+    });
+    document.getElementById('assignShiftForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const empId = document.getElementById('employeeId').value;
+        const shiftId = document.getElementById('shiftId').value;
+        const startVal = document.getElementById('startDate').value;
+        const endVal = document.getElementById('endDate').value;
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+        let d = new Date(startVal), end = new Date(endVal);
+        while (d <= end) {
+            let fd = new FormData();
+            fd.append('employeeId', empId); fd.append('shiftId', shiftId);
+            fd.append('date', d.toISOString().split('T')[0]);
+            fd.append('__RequestVerificationToken', token);
+            await fetch('/Employee/AssignShift', { method: 'POST', body: fd });
+            d.setDate(d.getDate() + 1);
+        }
+        window.location.href = '/Employee/ScheduleIndex?date=' + startVal;
+    });
+</script>

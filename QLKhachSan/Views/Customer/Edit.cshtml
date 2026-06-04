@@ -1,0 +1,162 @@
+@model QLKhachSan.Models.KhachHang
+@{
+    ViewData["Title"] = "Chỉnh sửa hồ sơ khách hàng";
+    var tiers = ViewBag.Tiers as IEnumerable<QLKhachSan.Models.HangThanhVien> ?? new List<QLKhachSan.Models.HangThanhVien>();
+    var activeBlacklist = Model.Blacklists?.FirstOrDefault(b => b.IsActive);
+    bool isBlacklisted = activeBlacklist != null;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-person-gear me-2"></i>Chỉnh sửa hồ sơ khách hàng</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post" asp-antiforgery="true" id="editCustomerForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="LoyaltyPoints" />
+                        <input type="hidden" asp-for="HangThanhVienId" />
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="HoTen" class="form-label font-weight-bold"></label>
+                                <input asp-for="HoTen" class="form-control" required />
+                                <span asp-validation-for="HoTen" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="CccdPassport" class="form-label font-weight-bold">Số CCCD/Passport</label>
+                                <input asp-for="CccdPassport" class="form-control bg-light" readonly />
+                                <span asp-validation-for="CccdPassport" class="text-danger"></span>
+                                <div class="form-text text-muted">Không được phép sửa CCCD/Passport.</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="NgaySinh" class="form-label font-weight-bold"></label>
+                                <input asp-for="NgaySinh" class="form-control" type="date" />
+                                <span asp-validation-for="NgaySinh" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="GioiTinh" class="form-label font-weight-bold"></label>
+                                <select asp-for="GioiTinh" class="form-select">
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                                <span asp-validation-for="GioiTinh" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Sdt" class="form-label font-weight-bold"></label>
+                                <input asp-for="Sdt" class="form-control" />
+                                <span asp-validation-for="Sdt" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label font-weight-bold"></label>
+                                <input asp-for="Email" class="form-control" type="email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DiaChi" class="form-label font-weight-bold"></label>
+                            <input asp-for="DiaChi" class="form-control" />
+                            <span asp-validation-for="DiaChi" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="QuocTich" class="form-label font-weight-bold"></label>
+                            <input asp-for="QuocTich" class="form-control" />
+                            <span asp-validation-for="QuocTich" class="text-danger"></span>
+                        </div>
+
+                        <h5 class="mt-4 mb-3 border-bottom pb-2 text-secondary">Thông tin doanh nghiệp (nếu có)</h5>
+                        <div class="mb-3">
+                            <label asp-for="TenCongTy" class="form-label font-weight-bold"></label>
+                            <input asp-for="TenCongTy" class="form-control" />
+                            <span asp-validation-for="TenCongTy" class="text-danger"></span>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="MstCongTy" class="form-label font-weight-bold">Mã số thuế</label>
+                                <input asp-for="MstCongTy" class="form-control" />
+                                <span asp-validation-for="MstCongTy" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DiaChiCongTy" class="form-label font-weight-bold">Địa chỉ công ty</label>
+                                <input asp-for="DiaChiCongTy" class="form-control" />
+                                <span asp-validation-for="DiaChiCongTy" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3 border-bottom pb-2 text-secondary">Hạng thành viên & Danh sách đen</h5>
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-md-6">
+                                <label class="form-label font-weight-bold">Hạng thành viên</label>
+                                <input class="form-control bg-light" value="@(Model.HangThanhVien?.TenHang ?? "Member")" readonly />
+                                <div class="form-text text-muted">Hệ thống tự tính dựa trên doanh thu.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-4">
+                                    <input class="form-check-input" type="checkbox" id="blacklistToggle" 
+                                           data-original="@isBlacklisted.ToString().ToLower()" 
+                                           data-blacklistid="@(activeBlacklist?.Id ?? 0)" 
+                                           @(isBlacklisted ? "checked" : "")>
+                                    <label class="form-check-label font-weight-bold text-danger" for="blacklistToggle">
+                                        Đưa vào danh sách đen (Blacklist)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4" id="blacklistReasonContainer" style="display: @(isBlacklisted ? "block" : "none");">
+                            <label for="blacklistReason" class="form-label font-weight-bold text-danger">Lý do đưa vào danh sách đen</label>
+                            <textarea id="blacklistReason" class="form-control border-danger" rows="3" placeholder="Nhập lý do chi tiết...">@(activeBlacklist?.LyDo)</textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i>Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('blacklistToggle').addEventListener('change', function() {
+        document.getElementById('blacklistReasonContainer').style.display = this.checked ? 'block' : 'none';
+    });
+
+    document.getElementById('editCustomerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const toggle = document.getElementById('blacklistToggle');
+        const originalStatus = toggle.dataset.original === 'true';
+        const currentStatus = toggle.checked;
+        if (currentStatus !== originalStatus) {
+            const url = currentStatus ? '/Customer/AddToBlacklist' : '/Customer/RemoveFromBlacklist';
+            const formData = new FormData();
+            if (currentStatus) {
+                formData.append('customerId', '@Model.Id');
+                formData.append('reason', document.getElementById('blacklistReason').value || 'Không có lý do cụ thể');
+            } else {
+                formData.append('id', toggle.dataset.blacklistid);
+            }
+            formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+            await fetch(url, { method: 'POST', body: formData });
+        }
+        e.target.submit();
+    });
+</script>

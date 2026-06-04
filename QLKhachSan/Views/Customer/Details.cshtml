@@ -1,0 +1,194 @@
+@model QLKhachSan.Models.KhachHang
+@{
+    ViewData["Title"] = "Hồ sơ khách hàng — " + Model.HoTen;
+    bool isBlacklisted = Model.Blacklists != null && Model.Blacklists.Any(b => b.IsActive);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h5 class="m-0 fw-bold" style="font-family: 'Outfit', sans-serif;">
+        <a href="@Url.Action("Index")" class="text-decoration-none text-muted">
+            <i class="fa-solid fa-arrow-left me-2"></i>Quay lại
+        </a> | Hồ sơ khách hàng
+    </h5>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-outline-warning btn-sm rounded-3">
+            <i class="fa-solid fa-pen me-1"></i>Chỉnh sửa
+        </a>
+    </div>
+</div>
+
+@if (isBlacklisted)
+{
+    <div class="alert alert-danger border-0 rounded-3 shadow-sm d-flex align-items-center gap-3 mb-4" role="alert">
+        <i class="fa-solid fa-user-slash fs-4"></i>
+        <div>
+            <strong>Cảnh báo: Khách hàng trong Danh sách đen!</strong>
+            <div class="small">
+                @foreach (var bl in Model.Blacklists.Where(b => b.IsActive))
+                {
+                    <span>Lý do: @bl.LyDo — Ngày áp dụng: @bl.NgayApDung.ToString("dd/MM/yyyy")</span>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row g-4">
+    <!-- Thông tin cá nhân -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-transparent border-0 pb-0 pt-4 px-4">
+                <h6 class="fw-bold text-uppercase text-muted small">
+                    <i class="fa-solid fa-id-card me-2"></i>Thông tin cá nhân
+                </h6>
+            </div>
+            <div class="card-body px-4 pt-2">
+                <table class="table table-borderless small mb-0">
+                    <tr>
+                        <td class="text-muted fw-bold" width="45%">Họ tên</td>
+                        <td class="fw-bold text-dark fs-6">@Model.HoTen</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted fw-bold">Ngày sinh</td>
+                        <td>@(Model.NgaySinh.HasValue ? Model.NgaySinh.Value.ToString("dd/MM/yyyy") : "N/A")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted fw-bold">Giới tính</td>
+                        <td>@(Model.GioiTinh ?? "N/A")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted fw-bold">Quốc tịch</td>
+                        <td>@(Model.QuocTich ?? "Việt Nam")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted fw-bold">CCCD / Passport</td>
+                        <td><span class="font-monospace">@Model.CccdPassport</span></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted fw-bold">Số điện thoại</td>
+                        <td>@(Model.Sdt ?? "N/A")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted fw-bold">Email</td>
+                        <td>@(Model.Email ?? "N/A")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted fw-bold">Địa chỉ</td>
+                        <td>@(Model.DiaChi ?? "N/A")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông tin thành viên & công ty -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 mb-3">
+            <div class="card-header bg-transparent border-0 pb-0 pt-4 px-4">
+                <h6 class="fw-bold text-uppercase text-muted small">
+                    <i class="fa-solid fa-award me-2"></i>Chương trình khách hàng thân thiết
+                </h6>
+            </div>
+            <div class="card-body px-4 pt-2">
+                @{
+                    string badgeColor = "bg-secondary";
+                    switch (Model.HangThanhVien?.TenHang?.ToLower())
+                    {
+                        case "silver": badgeColor = "bg-secondary text-white"; break;
+                        case "gold": badgeColor = "bg-warning text-dark"; break;
+                        case "platinum": badgeColor = "bg-info text-white"; break;
+                        case "diamond": badgeColor = "bg-primary text-white"; break;
+                    }
+                }
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="badge @badgeColor rounded-pill px-4 py-2 fs-6">
+                        <i class="fa-solid fa-gem me-2"></i>@(Model.HangThanhVien?.TenHang ?? "Member")
+                    </span>
+                </div>
+                <table class="table table-borderless small mb-0">
+                    <tr>
+                        <td class="text-muted fw-bold" width="50%">Điểm tích lũy</td>
+                        <td class="fw-bold text-primary fs-6">@Model.LoyaltyPoints.ToString("N0") pts</td>
+                    </tr>
+                    @if (Model.HangThanhVien != null)
+                    {
+                        <tr>
+                            <td class="text-muted fw-bold">Tỷ lệ giảm giá</td>
+                            <td>@((Model.HangThanhVien.TiLeGiamGia * 100).ToString("0.#"))%</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.TenCongTy))
+        {
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 pb-0 pt-4 px-4">
+                    <h6 class="fw-bold text-uppercase text-muted small">
+                        <i class="fa-solid fa-building me-2"></i>Thông tin công ty
+                    </h6>
+                </div>
+                <div class="card-body px-4 pt-2">
+                    <table class="table table-borderless small mb-0">
+                        <tr>
+                            <td class="text-muted fw-bold" width="40%">Tên công ty</td>
+                            <td>@Model.TenCongTy</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-bold">Mã số thuế</td>
+                            <td>@(Model.MstCongTy ?? "N/A")</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-bold">Địa chỉ CT</td>
+                            <td>@(Model.DiaChiCongTy ?? "N/A")</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Lịch sử lưu trú -->
+<div class="card border-0 shadow-sm rounded-4 mt-4">
+    <div class="card-header bg-transparent border-0 pb-0 pt-4 px-4">
+        <h6 class="fw-bold text-uppercase text-muted small">
+            <i class="fa-solid fa-clock-rotate-left me-2"></i>Lịch sử lưu trú
+        </h6>
+    </div>
+    <div class="card-body px-4 pt-2">
+        @if (Model.LichSuLuuTrus != null && Model.LichSuLuuTrus.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle small mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Phòng</th>
+                            <th>Ngày nhận phòng</th>
+                            <th>Ngày trả phòng</th>
+                            <th class="text-end">Tổng tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ls in Model.LichSuLuuTrus.OrderByDescending(l => l.NgayCheckIn))
+                        {
+                            <tr>
+                                <td><span class="badge bg-light text-dark border">@ls.Phong?.MaPhong</span></td>
+                                <td>@ls.NgayCheckIn.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@ls.NgayCheckOut.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="text-end fw-bold text-dark">@ls.TongTien.ToString("N0") đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted text-center py-4">
+                <i class="fa-solid fa-hotel me-2"></i>Chưa có lịch sử lưu trú.
+            </p>
+        }
+    </div>
+</div>

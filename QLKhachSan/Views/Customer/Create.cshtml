@@ -1,0 +1,128 @@
+@model QLKhachSan.Models.KhachHang
+@{
+    ViewData["Title"] = "Thêm khách hàng mới";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h5 class="m-0 fw-bold" style="font-family: 'Outfit', sans-serif;">
+        <a href="@Url.Action("Index")" class="text-decoration-none text-muted">
+            <i class="fa-solid fa-arrow-left me-2"></i>Quay lại
+        </a> | Thêm khách hàng mới
+    </h5>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 p-4 mx-auto" style="max-width: 760px;">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger small mb-3"></div>
+
+        <h6 class="fw-bold text-muted text-uppercase mb-3 small">
+            <i class="fa-solid fa-user-circle me-2"></i>Thông tin cá nhân
+        </h6>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="HoTen" class="form-label fw-bold small"></label>
+                <input asp-for="HoTen" class="form-control" placeholder="Họ và tên đầy đủ" />
+                <span asp-validation-for="HoTen" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label asp-for="NgaySinh" class="form-label fw-bold small"></label>
+                <input asp-for="NgaySinh" class="form-control" type="date" />
+                <span asp-validation-for="NgaySinh" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label asp-for="GioiTinh" class="form-label fw-bold small"></label>
+                <select asp-for="GioiTinh" class="form-select">
+                    <option value="">-- Chọn --</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                </select>
+                <span asp-validation-for="GioiTinh" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="CccdPassport" class="form-label fw-bold small"></label>
+                <input asp-for="CccdPassport" class="form-control" placeholder="Số CCCD hoặc số Passport" />
+                <span asp-validation-for="CccdPassport" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="QuocTich" class="form-label fw-bold small"></label>
+                <input asp-for="QuocTich" class="form-control" placeholder="Việt Nam, Mỹ, Nhật Bản..." />
+                <span asp-validation-for="QuocTich" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Sdt" class="form-label fw-bold small"></label>
+                <input asp-for="Sdt" class="form-control" placeholder="0912 345 678" />
+                <span asp-validation-for="Sdt" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="Email" class="form-label fw-bold small">Email</label>
+                <input asp-for="Email" class="form-control" type="email" placeholder="email@example.com" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="DiaChi" class="form-label fw-bold small"></label>
+            <input asp-for="DiaChi" class="form-control" placeholder="Số nhà, đường, phường, quận, tỉnh/thành phố" />
+            <span asp-validation-for="DiaChi" class="text-danger small"></span>
+        </div>
+
+        <hr class="my-3" />
+        <h6 class="fw-bold text-muted text-uppercase mb-3 small">
+            <i class="fa-solid fa-building me-2"></i>Thông tin công ty (nếu có)
+        </h6>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="TenCongTy" class="form-label fw-bold small"></label>
+                <input asp-for="TenCongTy" class="form-control" placeholder="Tên công ty (để trống nếu là khách lẻ)" />
+                <span asp-validation-for="TenCongTy" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="MstCongTy" class="form-label fw-bold small"></label>
+                <input asp-for="MstCongTy" class="form-control" placeholder="Mã số thuế" />
+                <span asp-validation-for="MstCongTy" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="DiaChiCongTy" class="form-label fw-bold small"></label>
+            <input asp-for="DiaChiCongTy" class="form-control" placeholder="Địa chỉ công ty" />
+        </div>
+
+        <hr class="my-3" />
+        <h6 class="fw-bold text-muted text-uppercase mb-3 small">
+            <i class="fa-solid fa-award me-2"></i>Hạng thành viên
+        </h6>
+
+        <div class="mb-4">
+            <label asp-for="HangThanhVienId" class="form-label fw-bold small">Hạng thành viên *</label>
+            <select asp-for="HangThanhVienId" class="form-select">
+                <option value="">-- Chọn hạng thành viên --</option>
+                @foreach (var tier in ViewBag.Tiers)
+                {
+                    <option value="@tier.Id">@tier.TenHang</option>
+                }
+            </select>
+            <span asp-validation-for="HangThanhVienId" class="text-danger small"></span>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100 py-2">
+                <i class="fa-solid fa-user-plus me-2"></i> LƯU HỒ SƠ KHÁCH HÀNG
+            </button>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary w-50 py-2">Hủy</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

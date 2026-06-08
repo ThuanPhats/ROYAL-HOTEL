@@ -1,0 +1,62 @@
+@model IEnumerable<QLKhachSan.Models.KhachHang>
+@{
+    ViewData["Title"] = "Quản lý Khách Hàng";
+}
+
+<div class="glass-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="text-primary m-0"><i class="fa-solid fa-users me-2"></i>Danh sách Khách hàng</h4>
+        <div class="d-flex gap-3">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" class="form-control" id="searchInput" placeholder="Tìm kiếm khách hàng...">
+            </div>
+            <button class="btn btn-premium"><i class="fa-solid fa-plus me-1"></i>Thêm Mới</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-premium table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Họ Tên</th>
+                    <th>CCCD/Passport</th>
+                    <th>Số Điện Thoại</th>
+                    <th>Địa Chỉ</th>
+                    <th class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="dataTable">
+                @if(Model != null)
+                {
+                    foreach(var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">@item.HoTen</td>
+                            <td><span class="badge bg-light text-dark border">@item.CCCD</span></td>
+                            <td>@item.SDT</td>
+                            <td>@item.DiaChi</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            $("#searchInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#dataTable tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+}

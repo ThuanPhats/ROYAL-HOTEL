@@ -1,0 +1,81 @@
+@model IEnumerable<QLKhachSan.Models.DichVu>
+@{
+    ViewData["Title"] = "Gọi Dịch Vụ (Order)";
+}
+
+<div class="row">
+    <!-- Cột Menu Dịch vụ -->
+    <div class="col-md-8">
+        <h5 class="text-primary mb-3"><i class="fa-solid fa-martini-glass-citrus me-2"></i>Thực đơn Dịch vụ</h5>
+        
+        <div class="row g-3">
+            @if(Model != null)
+            {
+                foreach(var dv in Model)
+                {
+                    <div class="col-md-4">
+                        <div class="glass-card p-3 text-center h-100 d-flex flex-column justify-content-between" style="border-top: 4px solid var(--accent-color);">
+                            <div>
+                                <div class="bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                    <i class="fa-solid fa-bell-concierge fs-3 text-primary"></i>
+                                </div>
+                                <h6 class="font-weight-bold">@dv.TenDichVu</h6>
+                            </div>
+                            <div class="mt-3">
+                                <span class="text-danger fw-bold fs-5">@dv.DonGia.ToString("N0")đ</span>
+                                <button class="btn btn-outline-primary btn-sm w-100 mt-2" onclick="selectService(@dv.Id, '@dv.TenDichVu', @dv.DonGia)">
+                                    <i class="fa-solid fa-plus"></i> Chọn
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+    
+    <!-- Cột Thông tin Order -->
+    <div class="col-md-4">
+        <div class="glass-card shadow-sm sticky-top" style="top: 90px;">
+            <h5 class="text-primary mb-4 border-bottom pb-2"><i class="fa-solid fa-receipt me-2"></i>Phiếu Order</h5>
+            
+            <form asp-action="SaveOrder" method="post">
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">CHỌN PHÒNG</label>
+                    <select name="phongId" class="form-select" required>
+                        <option value="">-- Phòng đang sử dụng --</option>
+                        @if(ViewBag.ActiveRooms != null)
+                        {
+                            foreach(var p in ViewBag.ActiveRooms)
+                            {
+                                <option value="@p.Id">@p.TenPhong</option>
+                            }
+                        }
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">DỊCH VỤ ĐÃ CHỌN</label>
+                    <input type="hidden" name="dichVuId" id="selectedDichVuId" required />
+                    <input type="text" class="form-control mb-2" id="selectedDichVuName" readonly placeholder="Chưa chọn dịch vụ..." />
+                    <input type="number" name="soLuong" class="form-control" value="1" min="1" placeholder="Số lượng" required />
+                </div>
+                
+                <div class="mt-4 pt-3 border-top">
+                    <button type="submit" class="btn btn-premium w-100 py-2">
+                        <i class="fa-solid fa-cart-plus me-2"></i>XÁC NHẬN ORDER
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function selectService(id, name, price) {
+            $('#selectedDichVuId').val(id);
+            $('#selectedDichVuName').val(name + ' (' + price.toLocaleString('vi-VN') + 'đ)');
+        }
+    </script>
+}

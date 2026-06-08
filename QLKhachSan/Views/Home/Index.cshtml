@@ -5,243 +5,118 @@
 <!-- Dashboard Cards -->
 <div class="row g-4 mb-5">
     <div class="col-md-3">
-        <div class="stat-card">
+        <div class="glass-card stat-card border-bottom border-4 border-primary">
             <div class="stat-icon bg-primary bg-opacity-10 text-primary">
                 <i class="fa-solid fa-percent"></i>
             </div>
-            <div class="stat-title">Công suất phòng hôm nay</div>
-            <div class="stat-value">@ViewBag.OccupancyRate.ToString("F1")%</div>
+            <div class="stat-details">
+                <div class="stat-title">Công suất phòng</div>
+                <div class="stat-value">@ViewBag.OccupancyRate.ToString("F1")%</div>
+            </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon bg-success bg-opacity-10 text-success">
+        <div class="glass-card stat-card border-bottom border-4 border-warning">
+            <div class="stat-icon bg-warning bg-opacity-10 text-warning">
                 <i class="fa-solid fa-sack-dollar"></i>
             </div>
-            <div class="stat-title">Doanh thu hôm nay</div>
-            <div class="stat-value">@ViewBag.TodayRevenue.ToString("N0")đ</div>
+            <div class="stat-details">
+                <div class="stat-title">Doanh thu hôm nay</div>
+                <div class="stat-value">@ViewBag.TodayRevenue.ToString("N0")đ</div>
+            </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="stat-card">
+        <div class="glass-card stat-card border-bottom border-4 border-danger">
             <div class="stat-icon bg-danger bg-opacity-10 text-danger">
-                <i class="fa-solid fa-user-check"></i>
+                <i class="fa-solid fa-bed"></i>
             </div>
-            <div class="stat-title">Phòng đang sử dụng</div>
-            <div class="stat-value">@ViewBag.OccupiedRooms</div>
+            <div class="stat-details">
+                <div class="stat-title">Phòng đang sử dụng</div>
+                <div class="stat-value">@ViewBag.OccupiedRooms / @ViewBag.TotalRooms</div>
+            </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon bg-warning bg-opacity-10 text-warning">
-                <i class="fa-solid fa-triangle-exclamation"></i>
+        <div class="glass-card stat-card border-bottom border-4 border-success">
+            <div class="stat-icon bg-success bg-opacity-10 text-success">
+                <i class="fa-solid fa-calendar-check"></i>
             </div>
-            <div class="stat-title">Vật tư tồn thấp / Bảo trì</div>
-            <div class="stat-value">@(ViewBag.LowStockCount + ViewBag.PendingMaintenanceCount)</div>
+            <div class="stat-details">
+                <div class="stat-title">Check-in dự kiến</div>
+                <div class="stat-value">0</div>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Sơ đồ phòng và chú thích -->
-<div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+<div class="glass-card mb-4 p-4">
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h5 class="m-0 font-weight-bold" style="font-family: 'Outfit', sans-serif;"><i class="fa-solid fa-map-location-dot text-primary me-2"></i>Sơ đồ trạng thái phòng thời gian thực</h5>
+        <h5 class="m-0 text-primary" style="font-family: 'Outfit', sans-serif;">
+            <i class="fa-solid fa-map-location-dot me-2"></i>Sơ đồ trạng thái phòng thời gian thực
+        </h5>
         <!-- Chú thích trạng thái -->
-        <div class="d-flex gap-3 flex-wrap small">
-            <div><span class="badge bg-success me-1">&nbsp;</span> Trống-Sạch</div>
-            <div><span class="badge bg-warning me-1">&nbsp;</span> Trống-Bẩn</div>
-            <div><span class="badge bg-danger me-1">&nbsp;</span> Đang ở</div>
-            <div><span class="badge bg-primary me-1">&nbsp;</span> Đã đặt trước</div>
-            <div><span class="badge bg-secondary me-1">&nbsp;</span> Bảo trì</div>
+        <div class="d-flex gap-3 flex-wrap small font-weight-bold">
+            <div><span class="badge bg-success me-1">&nbsp;</span> Trống</div>
+            <div><span class="badge bg-danger me-1">&nbsp;</span> Đang sử dụng</div>
+            <div><span class="badge bg-info me-1">&nbsp;</span> Đã đặt</div>
+            <div><span class="badge bg-warning me-1">&nbsp;</span> Bảo trì</div>
         </div>
     </div>
 
     <!-- Sơ đồ Grid phân theo tầng -->
-    @foreach (var floor in ViewBag.RoomsByFloor)
+    @if (ViewBag.RoomsByFloor != null)
     {
-        <div class="mb-4">
-            <h6 class="text-muted border-bottom pb-2 font-weight-bold"><i class="fa-solid fa-layer-group me-2 text-primary"></i>TẦNG @floor.Key</h6>
-            <div class="room-grid py-2">
-                @foreach (var room in floor.Value)
-                {
-                    string stateClass = "";
-                    string stateText = "";
-                    switch (room.TrangThai)
+        @foreach (var floor in ViewBag.RoomsByFloor)
+        {
+            <div class="mb-5">
+                <h6 class="text-muted border-bottom pb-2 font-weight-bold mb-3">
+                    <i class="fa-solid fa-layer-group me-2 text-primary"></i>TẦNG @floor.Key
+                </h6>
+                <div class="room-grid">
+                    @foreach (var room in floor.Value)
                     {
-                        case "Trong-Sach":
-                            stateClass = "clean";
-                            stateText = "Trống-Sạch";
-                            break;
-                        case "Trong-ChuaDon":
-                            stateClass = "dirty";
-                            stateText = "Trống-Bẩn";
-                            break;
-                        case "DangSuDung":
-                            stateClass = "occupied";
-                            stateText = "Đang ở";
-                            break;
-                        case "DaDat":
-                            stateClass = "reserved";
-                            stateText = "Đã đặt";
-                            break;
-                        case "BaoTri":
-                            stateClass = "maintenance";
-                            stateText = "Bảo trì";
-                            break;
+                        string stateClass = "";
+                        string stateIcon = "";
+                        switch (room.TrangThai)
+                        {
+                            case "Trong":
+                                stateClass = "status-trong";
+                                stateIcon = "fa-door-open";
+                                break;
+                            case "DangSuDung":
+                            case "DangỞ":
+                                stateClass = "status-dang-o";
+                                stateIcon = "fa-bed";
+                                break;
+                            case "DaDat":
+                                stateClass = "status-da-dat";
+                                stateIcon = "fa-suitcase";
+                                break;
+                            case "BaoTri":
+                                stateClass = "status-bao-tri";
+                                stateIcon = "fa-wrench";
+                                break;
+                        }
+                        
+                        <div class="room-box @stateClass">
+                            <div class="room-status-bar"></div>
+                            <div class="text-end mb-1">
+                                <i class="fa-solid @stateIcon room-icon fs-5"></i>
+                            </div>
+                            <div class="room-number text-primary">@room.TenPhong</div>
+                            <div class="room-type">@room.LoaiPhong?.TenLoai</div>
+                        </div>
                     }
-                    <div class="room-card @stateClass" id="room-card-@room.MaPhong" data-room-id="@room.Id" data-room-no="@room.MaPhong" data-room-status="@room.TrangThai" onclick="openRoomControl(this)">
-                        <span class="room-badge" id="room-badge-@room.MaPhong">@stateText</span>
-                        <div class="room-number">@room.MaPhong</div>
-                        <div class="room-type">@room.LoaiPhong?.TenLoaiPhong</div>
-                    </div>
-                }
-            </div>
-        </div>
-    }
-</div>
-
-<!-- Modal cập nhật nhanh dọn phòng & trạng thái (dành cho buồng phòng & kỹ thuật) -->
-<div class="modal fade" id="roomControlModal" tabindex="-1" aria-labelledby="roomControlModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-4 border-0 shadow">
-            <div class="modal-header border-bottom-0 pb-0">
-                <h5 class="modal-title font-weight-bold" id="roomControlModalLabel">Phòng <span id="modalRoomNo">P101</span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body py-4">
-                <p class="text-muted">Chọn hành động để cập nhật trạng thái phòng thời gian thực:</p>
-                <div class="d-grid gap-2">
-                    <button class="btn btn-outline-success text-start py-3 px-4 rounded-3 d-flex align-items-center justify-content-between" onclick="changeStatus('Trong-Sach')">
-                        <span><i class="fa-solid fa-circle-check me-2"></i>Dọn dẹp xong (Trống - Sạch)</span>
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </button>
-                    <button class="btn btn-outline-warning text-start py-3 px-4 rounded-3 d-flex align-items-center justify-content-between" onclick="changeStatus('Trong-ChuaDon')">
-                        <span><i class="fa-solid fa-soap me-2"></i>Cần dọn dẹp (Trống - Chưa dọn)</span>
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </button>
-                    <button class="btn btn-outline-secondary text-start py-3 px-4 rounded-3 d-flex align-items-center justify-content-between" onclick="changeStatus('BaoTri')">
-                        <span><i class="fa-solid fa-screwdriver-wrench me-2"></i>Bảo trì thiết bị</span>
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </button>
                 </div>
             </div>
-        </div>
-    </div>
+        }
+    }
 </div>
 
 @section Scripts {
     <script>
-        var currentSelectedRoomNo = "";
-        
-        function openRoomControl(element) {
-            var roomNo = $(element).data("room-no");
-            var status = $(element).data("room-status");
-            currentSelectedRoomNo = roomNo;
-            
-            $("#modalRoomNo").text(roomNo);
-            
-            // Chỉ cho phép thay đổi trạng thái nếu phòng không có khách đang ở
-            if (status === "DangSuDung") {
-                alert("Phòng đang có khách đang lưu trú. Không thể cập nhật trạng thái dọn dẹp.");
-                return;
-            }
-            if (status === "DaDat") {
-                alert("Phòng đã được khoá lịch đặt. Có thể đổi trạng thái dọn dẹp.");
-            }
-            
-            var myModal = new bootstrap.Modal(document.getElementById('roomControlModal'));
-            myModal.show();
-        }
-        
-        function changeStatus(newStatus) {
-            if (!currentSelectedRoomNo) return;
-            
-            $.ajax({
-                url: '@Url.Action("UpdateStatus", "Room")',
-                type: 'POST',
-                data: {
-                    maPhong: currentSelectedRoomNo,
-                    status: newStatus
-                },
-                success: function(response) {
-                    if (response.success) {
-                        // Đóng modal
-                        var myModalEl = document.getElementById('roomControlModal');
-                        var modal = bootstrap.Modal.getInstance(myModalEl);
-                        modal.hide();
-                    } else {
-                        alert(response.message);
-                    }
-                },
-                error: function() {
-                    alert("Có lỗi xảy ra khi cập nhật trạng thái.");
-                }
-            });
-        }
-
-        // --- KẾT NỐI REAL-TIME SIGNALR ---
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/roomHub")
-            .configureLogging(signalR.LogLevel.Information)
-            .build();
-
-        connection.on("ReceiveRoomStatusChange", function(maPhong, trangThaiMoi) {
-            console.log("Cập nhật real-time phòng: " + maPhong + " -> " + trangThaiMoi);
-            
-            var card = $("#room-card-" + maPhong);
-            var badge = $("#room-badge-" + maPhong);
-            
-            if (card.length > 0) {
-                // Xoá các class màu cũ
-                card.removeClass("clean dirty occupied reserved maintenance");
-                
-                var stateClass = "";
-                var stateText = "";
-                switch (trangThaiMoi) {
-                    case "Trong-Sach":
-                        stateClass = "clean";
-                        stateText = "Trống-Sạch";
-                        break;
-                    case "Trong-ChuaDon":
-                        stateClass = "dirty";
-                        stateText = "Trống-Bẩn";
-                        break;
-                    case "DangSuDung":
-                        stateClass = "occupied";
-                        stateText = "Đang ở";
-                        break;
-                    case "DaDat":
-                        stateClass = "reserved";
-                        stateText = "Đã đặt";
-                        break;
-                    case "BaoTri":
-                        stateClass = "maintenance";
-                        stateText = "Bảo trì";
-                        break;
-                }
-                
-                // Thêm class mới
-                card.addClass(stateClass);
-                card.data("room-status", trangThaiMoi); // Cập nhật dữ liệu jquery
-                badge.text(stateText);
-                
-                // Hiệu ứng nháy nhẹ để báo dọn xong
-                card.fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-            }
-        });
-
-        async function startSignalR() {
-            try {
-                await connection.start();
-                console.log("Đã kết nối SignalR Hub thành công.");
-            } catch (err) {
-                console.log("Lỗi kết nối SignalR Hub: ", err);
-                setTimeout(startSignalR, 5000);
-            }
-        }
-
-        $(document).ready(function() {
-            startSignalR();
-        });
+        // Animations or SignalR logic could go here
     </script>
 }

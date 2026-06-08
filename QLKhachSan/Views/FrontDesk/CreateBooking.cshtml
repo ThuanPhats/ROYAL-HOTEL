@@ -1,0 +1,101 @@
+@{
+    ViewData["Title"] = "Lập Phiếu Đặt Phòng";
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="glass-card mb-4">
+            <h4 class="text-primary mb-4 border-bottom pb-3"><i class="fa-solid fa-calendar-plus me-2"></i>Tạo Booking Mới</h4>
+            
+            <form asp-action="SaveBooking" method="post">
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label font-weight-bold text-muted small">KHÁCH HÀNG</label>
+                        <select name="khachHangId" class="form-select" required>
+                            <option value="">-- Chọn khách hàng --</option>
+                            @if(ViewBag.KhachHangs != null)
+                            {
+                                foreach(var kh in ViewBag.KhachHangs)
+                                {
+                                    <option value="@kh.Id">@kh.HoTen - @kh.SDT</option>
+                                }
+                            }
+                        </select>
+                        <div class="mt-2 text-end">
+                            <a href="#" class="small text-decoration-none text-primary"><i class="fa-solid fa-plus me-1"></i>Thêm khách mới</a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label font-weight-bold text-muted small">TIỀN ĐẶT CỌC (VNĐ)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-money-bill-wave text-success"></i></span>
+                            <input type="number" name="tienDatCoc" class="form-control" value="500000" min="0" step="50000">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label font-weight-bold text-muted small">NGÀY NHẬN PHÒNG</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-regular fa-calendar-check text-primary"></i></span>
+                            <input type="datetime-local" name="ngayNhan" class="form-control" required value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-weight-bold text-muted small">NGÀY TRẢ DỰ KIẾN</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-regular fa-calendar-xmark text-danger"></i></span>
+                            <input type="datetime-local" name="ngayTra" class="form-control" required value="@DateTime.Now.AddDays(1).ToString("yyyy-MM-ddTHH:mm")">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label font-weight-bold text-muted small">CHỌN PHÒNG TRỐNG</label>
+                    <div class="room-grid" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));">
+                        @if(ViewBag.Phongs != null)
+                        {
+                            foreach(var p in ViewBag.Phongs)
+                            {
+                                <div class="room-box status-trong text-center p-2" style="cursor: pointer;">
+                                    <input class="form-check-input mb-2" type="checkbox" name="selectedRooms" value="@p.Id" id="room_@p.Id">
+                                    <label class="form-check-label d-block stretched-link" for="room_@p.Id">
+                                        <div class="fw-bold text-success fs-5">@p.TenPhong</div>
+                                        <div class="small text-muted">@p.LoaiPhong?.TenLoai</div>
+                                        <div class="small fw-bold text-primary">@string.Format("{0:N0}đ", p.LoaiPhong?.GiaNgay)</div>
+                                    </label>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-5 pt-3 border-top">
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-light me-3 px-4">Hủy</a>
+                    <button type="submit" class="btn btn-premium px-5"><i class="fa-solid fa-check me-2"></i>LƯU BOOKING</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Hiệu ứng chọn phòng
+        $('input[type="checkbox"]').change(function() {
+            var box = $(this).closest('.room-box');
+            if(this.checked) {
+                box.removeClass('status-trong').addClass('bg-success text-white');
+                box.find('.text-success, .text-muted, .text-primary').removeClass('text-success text-muted text-primary').addClass('text-white');
+            } else {
+                box.removeClass('bg-success text-white').addClass('status-trong');
+                box.find('.fw-bold.fs-5').addClass('text-success').removeClass('text-white');
+                box.find('.small:eq(0)').addClass('text-muted').removeClass('text-white');
+                box.find('.small:eq(1)').addClass('text-primary').removeClass('text-white');
+            }
+        });
+    </script>
+}

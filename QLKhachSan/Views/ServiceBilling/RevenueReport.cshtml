@@ -1,0 +1,116 @@
+@{
+    ViewData["Title"] = "Báo Cáo Doanh Thu";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="glass-card mb-4">
+            <h4 class="text-primary mb-4 border-bottom pb-3"><i class="fa-solid fa-chart-line me-2"></i>Doanh thu 7 ngày gần nhất</h4>
+            
+            <div style="height: 400px; width: 100%;">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-2">
+    <div class="col-md-4">
+        <div class="stat-card glass-card border-bottom border-4 border-success">
+            <div class="stat-icon bg-success bg-opacity-10 text-success">
+                <i class="fa-solid fa-arrow-trend-up"></i>
+            </div>
+            <div class="stat-details">
+                <div class="stat-title">Tăng trưởng</div>
+                <div class="stat-value text-success">+12.5%</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card glass-card border-bottom border-4 border-primary">
+            <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="stat-details">
+                <div class="stat-title">Tổng khách phục vụ</div>
+                <div class="stat-value">124</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card glass-card border-bottom border-4 border-warning">
+            <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                <i class="fa-solid fa-star"></i>
+            </div>
+            <div class="stat-details">
+                <div class="stat-title">Đánh giá trung bình</div>
+                <div class="stat-value">4.8/5.0</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const ctx = document.getElementById('revenueChart');
+        
+        // Dữ liệu từ ViewBag
+        const labels = @Html.Raw(Json.Serialize(ViewBag.ChartLabels));
+        const data = @Html.Raw(Json.Serialize(ViewBag.ChartData));
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: data,
+                    borderColor: '#183C66',
+                    backgroundColor: 'rgba(24, 60, 102, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#D4AF37',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value, index, values) {
+                                if (value === 0) return '0đ';
+                                return (value / 1000000) + ' Tr';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

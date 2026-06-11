@@ -1,0 +1,35 @@
+@model QLKhachSan.Models.LoaiPhong
+@{
+    ViewData["Title"] = "Sửa Loại Phòng";
+}
+
+<div class="row">
+    <div class="col-lg-6 mx-auto">
+        <div class="glass-card">
+            <h4 class="text-primary mb-4 border-bottom pb-3">
+                <i class="fa-solid fa-pen-to-square me-2"></i>Sửa Loại Phòng
+            </h4>
+            <form asp-action="EditRoomType" method="post">
+                <input asp-for="Id" type="hidden" />
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">TÊN LOẠI PHÒNG *</label>
+                    <input asp-for="TenLoai" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">GIÁ / ĐÊM (VNĐ)</label>
+                    <input asp-for="GiaNgay" class="form-control" type="number" min="0" step="50000" />
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-muted small">SỐ NGƯỜI TỐI ĐA</label>
+                    <input asp-for="SoNguoiToiDa" class="form-control" type="number" min="1" max="10" />
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="@Url.Action("RoomTypes", "Catalog")" class="btn btn-light px-4">Hủy</a>
+                    <button type="submit" class="btn btn-premium px-5">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>CẬP NHẬT
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

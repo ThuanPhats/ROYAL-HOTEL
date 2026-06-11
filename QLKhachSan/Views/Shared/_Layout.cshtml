@@ -90,6 +90,26 @@
                         <i class="fa-solid fa-file-invoice-dollar"></i>Trả phòng & Thanh toán
                     </a>
                 </li>
+
+                <!-- Phân hệ Báo cáo & Quản trị -->
+                <li class="sidebar-item mt-3">
+                    <span class="ms-3 text-muted small fw-bold">BÁO CÁO & QUẢN TRỊ</span>
+                </li>
+                <li class="sidebar-item">
+                    <a href="@Url.Action("AllBookings", "Reports")">
+                        <i class="fa-solid fa-calendar-days"></i>Phiếu đặt phòng
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="@Url.Action("InvoiceHistory", "Reports")">
+                        <i class="fa-solid fa-file-invoice"></i>Lịch sử hóa đơn
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="@Url.Action("Promotions", "Reports")">
+                        <i class="fa-solid fa-tags"></i>Khuyến mãi
+                    </a>
+                </li>
                 <li class="sidebar-item">
                     <a href="@Url.Action("RevenueReport", "ServiceBilling")">
                         <i class="fa-solid fa-chart-pie"></i>Báo cáo doanh thu
@@ -111,8 +131,24 @@
                     <div class="dropdown">
                         <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa-regular fa-circle-user me-2 fs-5 text-primary"></i>
-                            <span>Xin chào, <strong>Lễ Tân</strong></span>
+                            <span>Xin chào, <strong>@(Context.Session.GetString("HoTen") ?? "Khách")</strong></span>
                         </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userDropdown">
+                            <li>
+                                <span class="dropdown-item-text text-muted small">
+                                    <i class="fa-solid fa-shield-halved me-1"></i>
+                                    @(Context.Session.GetString("VaiTro") ?? "")
+                                </span>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </header>

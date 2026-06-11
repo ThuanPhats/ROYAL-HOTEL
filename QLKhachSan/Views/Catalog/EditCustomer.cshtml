@@ -1,0 +1,43 @@
+@model QLKhachSan.Models.KhachHang
+@{
+    ViewData["Title"] = "Sửa Thông Tin Khách Hàng";
+}
+
+<div class="row">
+    <div class="col-lg-7 mx-auto">
+        <div class="glass-card">
+            <h4 class="text-primary mb-4 border-bottom pb-3">
+                <i class="fa-solid fa-user-pen me-2"></i>Sửa Thông Tin Khách Hàng
+            </h4>
+
+            <form asp-action="EditCustomer" method="post">
+                <input asp-for="Id" type="hidden" />
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">HỌ VÀ TÊN *</label>
+                    <input asp-for="HoTen" class="form-control" required />
+                    <span asp-validation-for="HoTen" class="text-danger small"></span>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted small">CCCD / PASSPORT</label>
+                        <input asp-for="CCCD" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted small">SỐ ĐIỆN THOẠI</label>
+                        <input asp-for="SDT" class="form-control" />
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-muted small">ĐỊA CHỈ</label>
+                    <textarea asp-for="DiaChi" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="@Url.Action("Customers", "Catalog")" class="btn btn-light px-4">Hủy</a>
+                    <button type="submit" class="btn btn-premium px-5">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>CẬP NHẬT
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

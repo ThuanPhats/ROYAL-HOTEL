@@ -11,7 +11,9 @@
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" class="form-control" id="searchInput" placeholder="Tìm kiếm phòng...">
             </div>
-            <button class="btn btn-premium"><i class="fa-solid fa-plus me-1"></i>Thêm Phòng Mới</button>
+            <a href="@Url.Action("CreateRoom", "Catalog")" class="btn btn-premium">
+                <i class="fa-solid fa-plus me-1"></i>Thêm Phòng Mới
+            </a>
         </div>
     </div>
 
@@ -54,8 +56,32 @@
                                 }
                             </td>
                             <td class="text-end">
-                                <button class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="@Url.Action("EditRoom", "Catalog", new { id = item.Id })" class="btn btn-sm btn-outline-primary" title="Sửa">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    @if(item.TrangThai == "Trong" || item.TrangThai == "BaoTri")
+                                    {
+                                        <form asp-action="ToggleRoomStatus" method="post" class="d-inline"
+                                              onsubmit="return confirm('Thay đổi trạng thái phòng [@item.TenPhong]?')">
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-sm @(item.TrangThai == "BaoTri" ? "btn-outline-success" : "btn-outline-warning")" title="@(item.TrangThai == "BaoTri" ? "Khôi phục" : "Bảo trì")">
+                                                <i class="fa-solid @(item.TrangThai == "BaoTri" ? "fa-check" : "fa-wrench")"></i>
+                                            </button>
+                                        </form>
+                                        <form asp-action="DeleteRoom" method="post" class="d-inline"
+                                              onsubmit="return confirm('Xóa phòng [@item.TenPhong]? Hành động này không thể hoàn tác!')">
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">(đang sử dụng)</span>
+                                    }
+                                </div>
                             </td>
                         </tr>
                     }

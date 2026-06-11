@@ -3,12 +3,12 @@
     ViewData["Title"] = "Quản lý Loại Phòng";
 }
 
-<div class="glass-card">
+<div class="glass-card mb-4">
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
         <h4 class="text-primary m-0"><i class="fa-solid fa-bed me-2"></i>Danh sách Loại phòng</h4>
-        <div class="d-flex gap-3">
-            <button class="btn btn-premium"><i class="fa-solid fa-plus me-1"></i>Thêm Loại Phòng</button>
-        </div>
+        <button class="btn btn-premium" data-bs-toggle="modal" data-bs-target="#addRoomTypeModal">
+            <i class="fa-solid fa-plus me-1"></i>Thêm Loại Phòng
+        </button>
     </div>
 
     <div class="table-responsive">
@@ -31,13 +31,49 @@
                             <td class="fw-bold text-success">@string.Format("{0:N0}đ", item.GiaNgay)</td>
                             <td><span class="badge bg-primary rounded-pill">@item.SoNguoiToiDa Người</span></td>
                             <td class="text-end">
-                                <button class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                                <a href="@Url.Action("EditRoomType", "Catalog", new { id = item.Id })"
+                                   class="btn btn-sm btn-outline-primary me-1" title="Sửa">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
                             </td>
                         </tr>
                     }
                 }
             </tbody>
         </table>
+    </div>
+</div>
+
+<!-- Modal Thêm Loại Phòng -->
+<div class="modal fade" id="addRoomTypeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 bg-primary text-white rounded-top-4">
+                <h5 class="modal-title"><i class="fa-solid fa-plus me-2"></i>Thêm Loại Phòng Mới</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="CreateRoomType" method="post">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">TÊN LOẠI PHÒNG *</label>
+                        <input type="text" name="TenLoai" class="form-control" placeholder="VD: Superior, Suite..." required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">GIÁ / ĐÊM (VNĐ)</label>
+                        <input type="number" name="GiaNgay" class="form-control" value="800000" min="0" step="50000" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">SỐ NGƯỜI TỐI ĐA</label>
+                        <input type="number" name="SoNguoiToiDa" class="form-control" value="2" min="1" max="10" />
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-premium px-4">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>

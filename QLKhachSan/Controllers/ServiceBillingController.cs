@@ -17,9 +17,16 @@ namespace QLKhachSan.Controllers
         // 5. Gọi dịch vụ (Order)
         public async Task<IActionResult> OrderService()
         {
-            // Lấy danh sách các phòng đang sử dụng để order
+            // Lấy danh sách các phòng đang có khách (trạng thái phiếu = "DangỞ")
+            var activeRoomIds = await _context.ChiTietDatPhongs
+                .Include(ct => ct.PhieuDatPhong)
+                .Where(ct => ct.PhieuDatPhong.TrangThai == "DangỞ")
+                .Select(ct => ct.PhongId)
+                .Distinct()
+                .ToListAsync();
+
             ViewBag.ActiveRooms = await _context.Phongs
-                .Where(p => p.TrangThai == "DangSuDung" || p.TrangThai == "DangỞ")
+                .Where(p => activeRoomIds.Contains(p.Id))
                 .ToListAsync();
 
             var services = await _context.DichVus.ToListAsync();
@@ -29,26 +36,32 @@ namespace QLKhachSan.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveOrder(int phongId, int dichVuId, int soLuong)
         {
-            // Tìm phiếu đặt phòng hiện tại của phòng này
+            // Tìm chi tiết đặt phòng hiện tại theo trạng thái phiếu "DangỞ"
             var chiTiet = await _context.ChiTietDatPhongs
                 .Include(ct => ct.PhieuDatPhong)
-                .Where(ct => ct.PhongId == phongId && (ct.PhieuDatPhong.TrangThai == "DangỞ" || ct.PhieuDatPhong.TrangThai == "DangSuDung"))
+                .Where(ct => ct.PhongId == phongId && ct.PhieuDatPhong.TrangThai == "DangỞ")
                 .FirstOrDefaultAsync();
 
             if (chiTiet != null)
             {
                 var dv = await _context.DichVus.FindAsync(dichVuId);
-                
-                // Giả lập tạo luôn một PhieuSuDungDichVu mới cho order này
-                var phieuDv = new PhieuSuDungDichVu
+
+                // Tìm phiếu dịch vụ đang mở của chi tiết này (tránh tạo quá nhiều phiếu)
+                var phieuDv = await _context.PhieuSuDungDichVus
+                    .FirstOrDefaultAsync(p => p.ChiTietDatPhongId == chiTiet.Id && p.TrangThai == "MoiTao");
+
+                if (phieuDv == null)
                 {
-                    ChiTietDatPhongId = chiTiet.Id,
-                    NgayTao = DateTime.Now,
-                    TrangThai = "MoiTao"
-                };
-                _context.PhieuSuDungDichVus.Add(phieuDv);
-                await _context.SaveChangesAsync(); // Lưu để lấy ID
-                
+                    phieuDv = new PhieuSuDungDichVu
+                    {
+                        ChiTietDatPhongId = chiTiet.Id,
+                        NgayTao = DateTime.Now,
+                        TrangThai = "MoiTao"
+                    };
+                    _context.PhieuSuDungDichVus.Add(phieuDv);
+                    await _context.SaveChangesAsync();
+                }
+
                 var hdDv = new ChiTietSuDungDichVu
                 {
                     PhieuSuDungDichVuId = phieuDv.Id,
@@ -59,8 +72,8 @@ namespace QLKhachSan.Controllers
                 };
                 _context.ChiTietSuDungDichVus.Add(hdDv);
                 await _context.SaveChangesAsync();
-                
-                TempData["SuccessMessage"] = "Đã thêm dịch vụ vào phòng thành công!";
+
+                TempData["SuccessMessage"] = $"Đã thêm [{dv?.TenDichVu}] x{soLuong} vào phòng thành công!";
             }
             else
             {
@@ -72,19 +85,27 @@ namespace QLKhachSan.Controllers
         // 6. Trả phòng & Thanh toán (Check-out)
         public async Task<IActionResult> CheckOut()
         {
-            // Lấy danh sách các phòng đang ở để thanh toán
+            // Lấy danh sách phiếu đang ở (trạng thái "DangỞ")
             var activeBookings = await _context.PhieuDatPhongs
                 .Include(p => p.KhachHang)
                 .Include(p => p.ChiTietDatPhongs)
-                .ThenInclude(ct => ct.Phong)
-                .Where(p => p.TrangThai == "DangỞ" || p.TrangThai == "DangSuDung")
+                    .ThenInclude(ct => ct.Phong)
+                .Include(p => p.ChiTietDatPhongs)
+                    .ThenInclude(ct => ct.PhieuSuDungDichVus)
+                        .ThenInclude(ps => ps.ChiTietSuDungDichVus)
+                .Where(p => p.TrangThai == "DangỞ")
+                .ToListAsync();
+
+            // Lấy danh sách khuyến mãi còn hiệu lực
+            ViewBag.KhuyenMais = await _context.KhuyenMais
+                .Where(km => km.NgayBatDau <= DateTime.Today && km.NgayKetThuc >= DateTime.Today)
                 .ToListAsync();
 
             return View(activeBookings);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessCheckOut(int bookingId)
+        public async Task<IActionResult> ProcessCheckOut(int bookingId, int? khuyenMaiId)
         {
             var phieu = await _context.PhieuDatPhongs
                 .Include(p => p.ChiTietDatPhongs).ThenInclude(ct => ct.Phong)
@@ -93,43 +114,64 @@ namespace QLKhachSan.Controllers
 
             if (phieu != null)
             {
-                // Tính tiền phòng
-                decimal tienPhong = phieu.ChiTietDatPhongs.Sum(ct => 
-                    ct.GiaThoaThuan * (decimal)(DateTime.Now - ct.NgayNhan).TotalDays > 0 
-                    ? (decimal)(DateTime.Now - ct.NgayNhan).TotalDays : 1
-                );
-                
+                // ✅ FIX: Tính tiền phòng đúng thứ tự ưu tiên toán tử
+                decimal tienPhong = phieu.ChiTietDatPhongs.Sum(ct =>
+                {
+                    double days = (DateTime.Now - ct.NgayNhan).TotalDays;
+                    decimal soNgay = (decimal)(days > 0 ? days : 1);
+                    return ct.GiaThoaThuan * soNgay;
+                });
+
                 // Tính tiền dịch vụ
                 decimal tienDichVu = phieu.ChiTietDatPhongs
                     .SelectMany(ct => ct.PhieuSuDungDichVus)
                     .SelectMany(ps => ps.ChiTietSuDungDichVus)
                     .Sum(hd => hd.ThanhTien);
-                
-                decimal tongTien = tienPhong + tienDichVu - phieu.TienDatCoc;
 
-                // Cập nhật trạng thái phòng thành "Chưa dọn"
-                foreach(var ct in phieu.ChiTietDatPhongs)
+                // Áp dụng khuyến mãi (nếu có)
+                decimal giamGia = 0;
+                KhuyenMai? khuyenMai = null;
+                if (khuyenMaiId.HasValue && khuyenMaiId.Value > 0)
                 {
-                    if(ct.Phong != null) ct.Phong.TrangThai = "Trong-ChuaDon";
+                    khuyenMai = await _context.KhuyenMais.FindAsync(khuyenMaiId.Value);
+                    if (khuyenMai != null)
+                    {
+                        giamGia = (tienPhong + tienDichVu) * (decimal)(khuyenMai.PhanTramGiam / 100.0);
+                    }
                 }
-                
-                phieu.TrangThai = "DaTra";
+
+                decimal tongTien = tienPhong + tienDichVu - giamGia - phieu.TienDatCoc;
+                if (tongTien < 0) tongTien = 0; // Không âm
+
+                // ✅ FIX: Trạng thái phòng → "Trong" (nhất quán với Dashboard)
+                foreach (var ct in phieu.ChiTietDatPhongs)
+                {
+                    if (ct.Phong != null) ct.Phong.TrangThai = "Trong";
+                }
+
+                // ✅ FIX: Trạng thái phiếu → "DaThanhToan" (nhất quán với báo cáo & SQL)
+                phieu.TrangThai = "DaThanhToan";
+
+                // Lấy TaiKhoanId từ Session (nếu có), fallback = 1 (admin)
+                int taiKhoanId = HttpContext.Session.GetInt32("TaiKhoanId") ?? 1;
 
                 // Sinh Hóa Đơn
                 var hoaDon = new HoaDon
                 {
                     PhieuDatPhongId = phieu.Id,
-                    TaiKhoanId = 2, // Hardcode Lễ tân
+                    TaiKhoanId = taiKhoanId,
+                    KhuyenMaiId = khuyenMai?.Id,
                     NgayLap = DateTime.Now,
                     TongTienPhong = tienPhong,
                     TongDichVu = tienDichVu,
                     TongCong = tongTien
                 };
-                
+
                 _context.HoaDons.Add(hoaDon);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = $"Trả phòng thành công! Tổng hóa đơn: {tongTien:N0}đ";
+                string kmInfo = khuyenMai != null ? $" (đã giảm {giamGia:N0}đ)" : "";
+                TempData["SuccessMessage"] = $"Trả phòng thành công! Tổng hóa đơn: {tongTien:N0}đ{kmInfo}";
             }
 
             return RedirectToAction("CheckOut");

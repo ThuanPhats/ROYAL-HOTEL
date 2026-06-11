@@ -57,8 +57,8 @@ namespace QLKhachSan.Data
             context.SaveChanges();
 
             context.TaiKhoans.AddRange(
-                new TaiKhoan { Username = "admin", PasswordHash = "123", HoTen = "Quản Lý", TrangThai = true, VaiTroId = vaiTroAdmin.Id },
-                new TaiKhoan { Username = "letan", PasswordHash = "123", HoTen = "Lễ Tân 1", TrangThai = true, VaiTroId = vaiTroLeTan.Id }
+                new TaiKhoan { Username = "admin",   PasswordHash = "123456", HoTen = "Quản trị viên", TrangThai = true, VaiTroId = vaiTroAdmin.Id },
+                new TaiKhoan { Username = "letan1",  PasswordHash = "123456", HoTen = "Nguyễn Lễ Tân",  TrangThai = true, VaiTroId = vaiTroLeTan.Id }
             );
 
             context.SaveChanges();

@@ -1,0 +1,128 @@
+@model IEnumerable<QLKhachSan.Models.KhuyenMai>
+@{
+    ViewData["Title"] = "Quản lý Khuyến Mãi";
+    var today = DateTime.Today;
+}
+
+<div class="glass-card mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="text-primary m-0"><i class="fa-solid fa-tags me-2"></i>Quản lý Khuyến Mãi</h4>
+        <button class="btn btn-premium" data-bs-toggle="modal" data-bs-target="#addPromoModal">
+            <i class="fa-solid fa-plus me-1"></i>Thêm khuyến mãi
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-premium table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tên chương trình</th>
+                    <th>% Giảm</th>
+                    <th>Từ ngày</th>
+                    <th>Đến ngày</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    int i = 1;
+                    foreach (var item in Model)
+                    {
+                        bool isActive = item.NgayBatDau <= today && item.NgayKetThuc >= today;
+                        bool isExpired = item.NgayKetThuc < today;
+                        <tr>
+                            <td class="text-muted small">@i</td>
+                            <td class="fw-bold">@item.TenKM</td>
+                            <td>
+                                <span class="badge bg-warning text-dark fs-6">
+                                    <i class="fa-solid fa-percent me-1"></i>@item.PhanTramGiam%
+                                </span>
+                            </td>
+                            <td class="text-muted small">@item.NgayBatDau.ToString("dd/MM/yyyy")</td>
+                            <td class="text-muted small">@item.NgayKetThuc.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (isActive)
+                                {
+                                    <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Đang hiệu lực</span>
+                                }
+                                else if (isExpired)
+                                {
+                                    <span class="badge bg-secondary">Đã hết hạn</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info">Sắp diễn ra</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="@Url.Action("EditPromotion", new { id = item.Id })" class="btn btn-sm btn-outline-primary" title="Sửa">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <form asp-action="DeletePromotion" method="post" class="d-inline"
+                                          onsubmit="return confirm('Xóa khuyến mãi [@item.TenKM]?')">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">Chưa có khuyến mãi nào.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Thêm Khuyến Mãi -->
+<div class="modal fade" id="addPromoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 bg-warning text-dark rounded-top-4">
+                <h5 class="modal-title"><i class="fa-solid fa-tags me-2"></i>Thêm Khuyến Mãi Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="CreatePromotion" method="post">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">TÊN CHƯƠNG TRÌNH *</label>
+                        <input type="text" name="TenKM" class="form-control" placeholder="VD: Khuyến mãi hè 2026..." required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">% GIẢM GIÁ *</label>
+                        <div class="input-group">
+                            <input type="number" name="PhanTramGiam" class="form-control" value="10" min="1" max="100" step="1" required />
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">NGÀY BẮT ĐẦU *</label>
+                            <input type="date" name="NgayBatDau" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">NGÀY KẾT THÚC *</label>
+                            <input type="date" name="NgayKetThuc" class="form-control" value="@DateTime.Today.AddDays(30).ToString("yyyy-MM-dd")" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-warning px-4">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

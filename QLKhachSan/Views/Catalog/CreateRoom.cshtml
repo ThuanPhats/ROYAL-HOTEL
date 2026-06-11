@@ -1,0 +1,40 @@
+@model QLKhachSan.Models.Phong
+@{
+    ViewData["Title"] = "Thêm Phòng Mới";
+    var loaiPhongs = ViewBag.LoaiPhongs as IEnumerable<QLKhachSan.Models.LoaiPhong>;
+}
+
+<div class="row">
+    <div class="col-lg-6 mx-auto">
+        <div class="glass-card">
+            <h4 class="text-primary mb-4 border-bottom pb-3">
+                <i class="fa-solid fa-door-open me-2"></i>Thêm Phòng Mới
+            </h4>
+            <form asp-action="CreateRoom" method="post">
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">TÊN PHÒNG *</label>
+                    <input asp-for="TenPhong" class="form-control" placeholder="VD: P.301..." required />
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-muted small">LOẠI PHÒNG *</label>
+                    <select asp-for="LoaiPhongId" class="form-select" required>
+                        <option value="">-- Chọn loại phòng --</option>
+                        @if (loaiPhongs != null)
+                        {
+                            foreach (var lp in loaiPhongs)
+                            {
+                                <option value="@lp.Id">@lp.TenLoai - @lp.GiaNgay.ToString("N0")đ/đêm</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="@Url.Action("Rooms", "Catalog")" class="btn btn-light px-4">Hủy</a>
+                    <button type="submit" class="btn btn-premium px-5">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>LƯU
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

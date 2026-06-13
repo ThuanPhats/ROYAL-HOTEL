@@ -1,0 +1,161 @@
+@model IEnumerable<QLKhachSan.Models.DichVu>
+@{
+    ViewData["Title"] = "Quản lý Dịch Vụ";
+    var loaiDichVus = ViewBag.LoaiDichVus as IEnumerable<QLKhachSan.Models.LoaiDichVu>;
+}
+
+<div class="glass-card mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="text-primary m-0"><i class="fa-solid fa-martini-glass-citrus me-2"></i>Quản lý Dịch vụ</h4>
+        <button class="btn btn-premium" data-bs-toggle="modal" data-bs-target="#addServiceModal">
+            <i class="fa-solid fa-plus me-1"></i>Thêm Dịch vụ
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-premium table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tên Dịch vụ</th>
+                    <th>Loại</th>
+                    <th>Đơn giá</th>
+                    <th class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    int i = 1;
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-muted small">@i</td>
+                            <td class="fw-bold">@item.TenDichVu</td>
+                            <td><span class="badge bg-info text-white">@item.LoaiDichVu?.TenLoai</span></td>
+                            <td class="text-danger fw-bold">@item.DonGia.ToString("N0")đ</td>
+                            <td class="text-end">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <!-- Nút Sửa → mở modal với data-* -->
+                                    <button class="btn btn-sm btn-outline-primary" title="Sửa"
+                                        onclick="openEditService(@item.Id, '@Html.Raw(item.TenDichVu.Replace("'", "\\'"))', @item.DonGia, @item.LoaiDichVuId)">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <form asp-action="DeleteService" method="post" class="d-inline"
+                                          onsubmit="return confirm('Xóa dịch vụ [@item.TenDichVu]?')">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                }
+            </tbody>
+        </table>
+        @if (Model == null || !Model.Any())
+        {
+            <div class="text-center py-4 text-muted">Chưa có dịch vụ nào.</div>
+        }
+    </div>
+</div>
+
+<!-- Modal Thêm Dịch vụ -->
+<div class="modal fade" id="addServiceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 bg-primary text-white rounded-top-4">
+                <h5 class="modal-title"><i class="fa-solid fa-plus me-2"></i>Thêm Dịch vụ Mới</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="CreateService" method="post">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">TÊN DỊCH VỤ *</label>
+                        <input type="text" name="tenDichVu" class="form-control" placeholder="Nhập tên dịch vụ..." required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">ĐƠN GIÁ (VNĐ)</label>
+                        <input type="number" name="donGia" class="form-control" value="50000" min="0" step="1000" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">LOẠI DỊCH VỤ</label>
+                        <select name="loaiDichVuId" class="form-select" required>
+                            @if (loaiDichVus != null)
+                            {
+                                foreach (var lv in loaiDichVus)
+                                {
+                                    <option value="@lv.Id">@lv.TenLoai</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-premium px-4">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Sửa Dịch vụ -->
+<div class="modal fade" id="editServiceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 bg-warning text-dark rounded-top-4">
+                <h5 class="modal-title"><i class="fa-solid fa-pen me-2"></i>Sửa Dịch vụ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="EditService" method="post">
+                <div class="modal-body p-4">
+                    <input type="hidden" name="id" id="editServiceId" />
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">TÊN DỊCH VỤ *</label>
+                        <input type="text" name="TenDichVu" id="editServiceName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">ĐƠN GIÁ (VNĐ)</label>
+                        <input type="number" name="DonGia" id="editServicePrice" class="form-control" min="0" step="1000" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">LOẠI DỊCH VỤ</label>
+                        <select name="LoaiDichVuId" id="editServiceType" class="form-select" required>
+                            @if (loaiDichVus != null)
+                            {
+                                foreach (var lv in loaiDichVus)
+                                {
+                                    <option value="@lv.Id">@lv.TenLoai</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-warning px-4">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Lưu thay đổi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openEditService(id, name, price, loaiId) {
+            document.getElementById('editServiceId').value = id;
+            document.getElementById('editServiceName').value = name;
+            document.getElementById('editServicePrice').value = price;
+            document.getElementById('editServiceType').value = loaiId;
+            new bootstrap.Modal(document.getElementById('editServiceModal')).show();
+        }
+    </script>
+}

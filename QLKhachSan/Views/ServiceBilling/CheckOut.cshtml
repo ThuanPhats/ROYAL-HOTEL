@@ -1,0 +1,117 @@
+@model IEnumerable<QLKhachSan.Models.PhieuDatPhong>
+@{
+    ViewData["Title"] = "Trả Phòng & Thanh Toán (Check-out)";
+}
+
+<div class="glass-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="text-primary m-0"><i class="fa-solid fa-file-invoice-dollar me-2"></i>Thanh toán Hóa đơn</h4>
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" class="form-control" id="searchInput" placeholder="Tìm theo phòng, tên khách...">
+        </div>
+    </div>
+
+    <div class="row g-4" id="checkoutList">
+        @if(Model != null && Model.Any())
+        {
+            foreach(var item in Model)
+            {
+                // Tính trước để hiển thị
+                decimal tienPhong = item.ChiTietDatPhongs?.Sum(ct => {
+                    double days = (DateTime.Now - ct.NgayNhan).TotalDays;
+                    decimal soNgay = (decimal)(days > 0 ? days : 1);
+                    return ct.GiaThoaThuan * soNgay;
+                }) ?? 0;
+
+                decimal tienDichVu = item.ChiTietDatPhongs?
+                    .SelectMany(ct => ct.PhieuSuDungDichVus ?? Enumerable.Empty<QLKhachSan.Models.PhieuSuDungDichVu>())
+                    .SelectMany(ps => ps.ChiTietSuDungDichVus ?? Enumerable.Empty<QLKhachSan.Models.ChiTietSuDungDichVu>())
+                    .Sum(hd => hd.ThanhTien) ?? 0;
+
+                decimal tamTinh = tienPhong + tienDichVu - item.TienDatCoc;
+
+                <div class="col-md-6 col-lg-4 checkout-item">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-header bg-primary text-white border-0 py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+                            <h5 class="m-0 font-weight-bold">
+                                @if(item.ChiTietDatPhongs != null && item.ChiTietDatPhongs.Any())
+                                {
+                                    @string.Join(", ", item.ChiTietDatPhongs.Select(ct => ct.Phong?.TenPhong))
+                                }
+                                else { <span>N/A</span> }
+                            </h5>
+                            <span class="badge bg-light text-primary">#BK-@item.Id.ToString("D4")</span>
+                        </div>
+                        <div class="card-body bg-light">
+                            <div class="mb-2"><i class="fa-regular fa-user text-muted me-2"></i><span class="fw-bold">@item.KhachHang?.HoTen</span></div>
+                            <div class="mb-2"><i class="fa-solid fa-phone text-muted me-2"></i>@item.KhachHang?.SDT</div>
+                            <div class="mb-2"><i class="fa-regular fa-calendar-check text-muted me-2"></i>@item.NgayLap.ToString("dd/MM/yyyy HH:mm")</div>
+                            <hr class="my-2"/>
+                            <!-- Chi tiết tiền -->
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-muted">Tiền phòng:</span>
+                                <span class="fw-bold">@tienPhong.ToString("N0")đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-muted">Tiền dịch vụ:</span>
+                                <span class="fw-bold">@tienDichVu.ToString("N0")đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between small text-danger">
+                                <span>Đặt cọc (đã thu):</span>
+                                <span class="fw-bold">-@item.TienDatCoc.ToString("N0")đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1 border-top pt-1">
+                                <span class="fw-bold">Tạm tính:</span>
+                                <span class="fw-bold text-primary fs-6">@tamTinh.ToString("N0")đ</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0 p-3 rounded-bottom-4">
+                            <form asp-action="ProcessCheckOut" method="post"
+                                  onsubmit="return confirm('Xác nhận trả phòng và xuất hóa đơn?');">
+                                <input type="hidden" name="bookingId" value="@item.Id" />
+                                <!-- Chọn khuyến mãi -->
+                                @if(ViewBag.KhuyenMais != null && ((IEnumerable<QLKhachSan.Models.KhuyenMai>)ViewBag.KhuyenMais).Any())
+                                {
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small fw-bold mb-1">KHUYẾN MÃI</label>
+                                        <select name="khuyenMaiId" class="form-select form-select-sm">
+                                            <option value="">-- Không áp dụng --</option>
+                                            @foreach(var km in (IEnumerable<QLKhachSan.Models.KhuyenMai>)ViewBag.KhuyenMais)
+                                            {
+                                                <option value="@km.Id">@km.TenKM (-@km.PhanTramGiam%)</option>
+                                            }
+                                        </select>
+                                    </div>
+                                }
+                                <button type="submit" class="btn btn-outline-danger w-100 fw-bold">
+                                    <i class="fa-solid fa-right-from-bracket me-2"></i>Check-out & Tính tiền
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5 text-muted">
+                <i class="fa-solid fa-bed-pulse fs-1 mb-3 text-light d-block"></i>
+                <p>Hiện không có phòng nào đang sử dụng (Chưa có khách lưu trú).</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            $("#searchInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $(".checkout-item").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,48 @@
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+@model dynamic
+@{
+    ViewData["Title"] = "Lỗi hệ thống";
+    var requestId = System.Diagnostics.Activity.Current?.Id ?? Context.TraceIdentifier;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="display-1 text-danger mb-4">
+                <i class="bi bi-exclamation-octagon-fill"></i>
+            </div>
+            <h1 class="text-dark mb-3">Đã xảy ra sự cố!</h1>
+            
+            <div class="alert alert-danger shadow-sm py-4">
+                <h4 class="alert-heading mb-3">Rất tiếc, hệ thống đã gặp lỗi ngoài ý muốn.</h4>
+                <p class="mb-0">Yêu cầu của bạn không thể hoàn thành vào lúc này. Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ kỹ thuật của khách sạn.</p>
+            </div>
+
+            <div class="card border-0 shadow-sm mt-4 bg-light">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Mã định danh yêu cầu lỗi (Request ID):</p>
+                    <code class="fs-5 text-dark fw-bold">@requestId</code>
+                </div>
+            </div>
+
+            @if (Env.IsDevelopment())
+            {
+                <div class="card border-danger mt-4 text-start">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0"><i class="bi bi-bug me-2"></i>Chi tiết lỗi (Chỉ hiển thị ở môi trường Development)</h5>
+                    </div>
+                    <div class="card-body bg-dark text-light font-monospace" style="font-size: 0.9rem;">
+                        <p class="mb-2"><strong>Môi trường:</strong> Development</p>
+                        <p class="mb-0">Bạn có thể kiểm tra Log Console hoặc Output của Visual Studio để xem chi tiết Stack Trace.</p>
+                    </div>
+                </div>
+            }
+
+            <div class="mt-4">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4">
+                    <i class="bi bi-house-door me-2"></i>Quay lại Trang chủ
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,100 @@
+@model IEnumerable<QLKhachSan.Models.PhieuDatPhong>
+@{
+    ViewData["Title"] = "Danh sách Phiếu Đặt Phòng";
+    string? currentStatus = ViewBag.CurrentStatus as string;
+}
+
+<div class="glass-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3 flex-wrap gap-3">
+        <h4 class="text-primary m-0"><i class="fa-solid fa-calendar-days me-2"></i>Tất cả Phiếu Đặt Phòng</h4>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="@Url.Action("AllBookings")" class="btn btn-sm @(currentStatus == null ? "btn-primary" : "btn-outline-secondary")">Tất cả</a>
+            <a href="@Url.Action("AllBookings", new { status = "DaDat" })" class="btn btn-sm @(currentStatus == "DaDat" ? "btn-info" : "btn-outline-info")">Đã đặt</a>
+            <a href="@Url.Action("AllBookings", new { status = "DangỞ" })" class="btn btn-sm @(currentStatus == "DangỞ" ? "btn-danger" : "btn-outline-danger")">Đang ở</a>
+            <a href="@Url.Action("AllBookings", new { status = "DaThanhToan" })" class="btn btn-sm @(currentStatus == "DaThanhToan" ? "btn-success" : "btn-outline-success")">Đã thanh toán</a>
+            <a href="@Url.Action("AllBookings", new { status = "DaHuy" })" class="btn btn-sm @(currentStatus == "DaHuy" ? "btn-secondary" : "btn-outline-secondary")">Đã hủy</a>
+            <a href="@Url.Action("CreateBooking", "FrontDesk")" class="btn btn-premium btn-sm">
+                <i class="fa-solid fa-plus me-1"></i>Đặt phòng mới
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-premium table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Mã phiếu</th>
+                    <th>Khách hàng</th>
+                    <th>Phòng</th>
+                    <th>Ngày lập</th>
+                    <th>Cọc</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><span class="badge bg-dark fs-6">#BK-@item.Id.ToString("D4")</span></td>
+                            <td>
+                                <div class="fw-bold">@item.KhachHang?.HoTen</div>
+                                <small class="text-muted">@item.KhachHang?.SDT</small>
+                            </td>
+                            <td>
+                                @foreach (var ct in item.ChiTietDatPhongs)
+                                {
+                                    <span class="badge bg-secondary me-1">@ct.Phong?.TenPhong</span>
+                                }
+                            </td>
+                            <td class="text-muted small">@item.NgayLap.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="fw-bold text-success">@item.TienDatCoc.ToString("N0")đ</td>
+                            <td>
+                                @switch (item.TrangThai)
+                                {
+                                    case "DaDat":
+                                        <span class="badge bg-info">Đã đặt</span>
+                                        break;
+                                    case "DangỞ":
+                                        <span class="badge bg-danger">Đang ở</span>
+                                        break;
+                                    case "DaThanhToan":
+                                        <span class="badge bg-success">Đã thanh toán</span>
+                                        break;
+                                    case "DaHuy":
+                                        <span class="badge bg-secondary">Đã hủy</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">@item.TrangThai</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-end">
+                                @if (item.TrangThai == "DaDat")
+                                {
+                                    <form asp-action="CancelBooking" method="post" class="d-inline"
+                                          onsubmit="return confirm('Hủy phiếu đặt phòng #BK-@item.Id.ToString("D4")?')">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fa-solid fa-ban me-1"></i>Hủy phiếu
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">Không có phiếu nào.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

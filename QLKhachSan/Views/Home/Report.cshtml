@@ -1,0 +1,181 @@
+@{
+    ViewData["Title"] = "Báo cáo & Thống kê kinh doanh";
+}
+
+<div class="row g-4 mb-4">
+    <!-- Biểu đồ doanh thu 30 ngày qua -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+            <h5 class="font-weight-bold mb-4" style="font-family: 'Outfit', sans-serif;">
+                <i class="fa-solid fa-chart-line text-primary me-2"></i>Doanh thu 30 ngày gần đây (VNĐ)
+            </h5>
+            <div style="position: relative; height: 320px; width: 100%;">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cấu trúc doanh thu -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+            <h5 class="font-weight-bold mb-4" style="font-family: 'Outfit', sans-serif;">
+                <i class="fa-solid fa-chart-pie text-success me-2"></i>Cơ cấu doanh thu
+            </h5>
+            <div style="position: relative; height: 320px; width: 100%; display: flex; align-items: center; justify-content: center;">
+                <canvas id="structureChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Top dịch vụ -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h5 class="font-weight-bold mb-4" style="font-family: 'Outfit', sans-serif;">
+                <i class="fa-solid fa-ranking-star text-warning me-2"></i>Top 5 Dịch vụ sử dụng nhiều nhất (Lượt gọi)
+            </h5>
+            <div style="position: relative; height: 260px; width: 100%;">
+                <canvas id="topServicesChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tóm tắt hoạt động & Cảnh báo -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+            <h5 class="font-weight-bold mb-4" style="font-family: 'Outfit', sans-serif;">
+                <i class="fa-solid fa-clipboard-check text-info me-2"></i>Tóm tắt vận hành khách sạn
+            </h5>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3 border-0 border-bottom">
+                    <div>
+                        <h6 class="mb-0 font-weight-bold"><i class="fa-solid fa-screwdriver-wrench text-danger me-2"></i>Thiết bị lỗi đang bảo trì</h6>
+                        <small class="text-muted">Cần kỹ sư xử lý hoàn tất</small>
+                    </div>
+                    <span class="badge bg-danger rounded-pill fs-6 px-3">@ViewBag.PendingMaintenanceCount</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3 border-0 border-bottom">
+                    <div>
+                        <h6 class="mb-0 font-weight-bold"><i class="fa-solid fa-warehouse text-warning me-2"></i>Vật tư tiêu hao sắp hết</h6>
+                        <small class="text-muted">Tồn kho thấp hơn định mức tối thiểu</small>
+                    </div>
+                    <span class="badge bg-warning text-dark rounded-pill fs-6 px-3">@ViewBag.LowStockCount</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3 border-0">
+                    <div>
+                        <h6 class="mb-0 font-weight-bold"><i class="fa-solid fa-user-shield text-info me-2"></i>Khách hàng trong Blacklist</h6>
+                        <small class="text-muted">Đang áp dụng lệnh cảnh báo</small>
+                    </div>
+                    <span class="badge bg-secondary rounded-pill fs-6 px-3">Hoạt động</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // 1. Biểu đồ doanh thu 30 ngày
+        const revCtx = document.getElementById('revenueChart').getContext('2d');
+        const dailyLabels = @Json.Serialize(ViewBag.DailyRevenueLabels);
+        const dailyValues = @Json.Serialize(ViewBag.DailyRevenueValues);
+        
+        new Chart(revCtx, {
+            type: 'line',
+            data: {
+                labels: dailyLabels.length > 0 ? dailyLabels : ["Chưa có dữ liệu"],
+                datasets: [{
+                    label: 'Doanh thu ngày',
+                    data: dailyValues.length > 0 ? dailyValues : [0],
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#4f46e5'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString() + ' đ';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Biểu đồ cơ cấu doanh thu
+        const structCtx = document.getElementById('structureChart').getContext('2d');
+        const structLabels = @Json.Serialize(ViewBag.RevenueStructureLabels);
+        const structValues = @Json.Serialize(ViewBag.RevenueStructureValues);
+        
+        new Chart(structCtx, {
+            type: 'doughnut',
+            data: {
+                labels: structLabels,
+                datasets: [{
+                    data: structValues.every(v => v === 0) ? [100, 0] : structValues,
+                    backgroundColor: ['#6366f1', '#10b981'],
+                    borderWidth: 2,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // 3. Biểu đồ Top 5 dịch vụ sử dụng nhiều nhất
+        const serviceCtx = document.getElementById('topServicesChart').getContext('2d');
+        const topServiceNames = @Json.Serialize(ViewBag.TopServiceNames);
+        const topServiceCounts = @Json.Serialize(ViewBag.TopServiceCounts);
+        
+        new Chart(serviceCtx, {
+            type: 'bar',
+            data: {
+                labels: topServiceNames.length > 0 ? topServiceNames : ["Chưa dùng dịch vụ"],
+                datasets: [{
+                    label: 'Lượt sử dụng',
+                    data: topServiceCounts.length > 0 ? topServiceCounts : [0],
+                    backgroundColor: '#f59e0b',
+                    borderRadius: 6,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    </script>
+}

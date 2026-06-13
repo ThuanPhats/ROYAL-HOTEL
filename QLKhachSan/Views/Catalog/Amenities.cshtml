@@ -1,0 +1,43 @@
+@model IEnumerable<QLKhachSan.Models.TienNghi>
+@{
+    ViewData["Title"] = "Quản lý Tiện Nghi";
+}
+
+<div class="glass-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="text-primary m-0"><i class="fa-solid fa-tv me-2"></i>Danh sách Tiện nghi</h4>
+        <div class="d-flex gap-3">
+            <button class="btn btn-premium"><i class="fa-solid fa-plus me-1"></i>Thêm Mới</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-premium table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên Tiện Nghi</th>
+                    <th>Mô Tả</th>
+                    <th class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(Model != null)
+                {
+                    foreach(var item in Model)
+                    {
+                        <tr>
+                            <td class="text-muted">#@item.Id</td>
+                            <td class="fw-bold">@item.TenTienNghi</td>
+                            <td>@item.MoTa</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

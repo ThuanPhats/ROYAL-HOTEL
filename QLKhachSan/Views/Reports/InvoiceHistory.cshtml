@@ -1,0 +1,107 @@
+@model IEnumerable<QLKhachSan.Models.HoaDon>
+@{
+    ViewData["Title"] = "Lịch sử Hóa Đơn";
+    decimal totalRevenue = ViewBag.TotalRevenue ?? 0m;
+}
+
+<!-- Summary Card -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="glass-card stat-card border-bottom border-4 border-success">
+            <div class="stat-icon bg-success bg-opacity-10 text-success">
+                <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+            <div class="stat-details">
+                <div class="stat-title">Tổng doanh thu (bộ lọc)</div>
+                <div class="stat-value">@totalRevenue.ToString("N0")đ</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card stat-card border-bottom border-4 border-primary">
+            <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                <i class="fa-solid fa-file-invoice"></i>
+            </div>
+            <div class="stat-details">
+                <div class="stat-title">Số hóa đơn</div>
+                <div class="stat-value">@(Model?.Count() ?? 0)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card stat-card border-bottom border-4 border-warning">
+            <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="stat-details">
+                <div class="stat-title">Trung bình / hóa đơn</div>
+                <div class="stat-value">
+                    @(Model != null && Model.Any() ? (totalRevenue / Model.Count()).ToString("N0") + "đ" : "0đ")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3 flex-wrap gap-3">
+        <h4 class="text-primary m-0"><i class="fa-solid fa-file-invoice-dollar me-2"></i>Lịch sử Hóa Đơn</h4>
+        <!-- Bộ lọc ngày -->
+        <form method="get" class="d-flex gap-2 align-items-center flex-wrap">
+            <label class="fw-bold text-muted small">Từ:</label>
+            <input type="date" name="fromDate" class="form-control form-control-sm" value="@ViewBag.FromDate" />
+            <label class="fw-bold text-muted small">Đến:</label>
+            <input type="date" name="toDate" class="form-control form-control-sm" value="@ViewBag.ToDate" />
+            <button type="submit" class="btn btn-sm btn-primary"><i class="fa-solid fa-filter me-1"></i>Lọc</button>
+            <a href="@Url.Action("InvoiceHistory")" class="btn btn-sm btn-outline-secondary">Xóa lọc</a>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-premium table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Mã HĐ</th>
+                    <th>Phiếu đặt</th>
+                    <th>Khách hàng</th>
+                    <th>Ngày lập</th>
+                    <th>Tiền phòng</th>
+                    <th>Tiền DV</th>
+                    <th>Khuyến mãi</th>
+                    <th class="text-success">Tổng cộng</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><span class="badge bg-dark">#HD-@item.Id.ToString("D4")</span></td>
+                            <td><span class="badge bg-secondary">#BK-@item.PhieuDatPhongId.ToString("D4")</span></td>
+                            <td>
+                                <div class="fw-bold">@item.PhieuDatPhong?.KhachHang?.HoTen</div>
+                                <small class="text-muted">@item.TaiKhoan?.Username</small>
+                            </td>
+                            <td class="text-muted small">@item.NgayLap.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@item.TongTienPhong.ToString("N0")đ</td>
+                            <td>@item.TongDichVu.ToString("N0")đ</td>
+                            <td>
+                                @if (item.KhuyenMai != null)
+                                {
+                                    <span class="badge bg-warning text-dark">@item.KhuyenMai.TenKM (-@item.KhuyenMai.PhanTramGiam%)</span>
+                                }
+                                else { <span class="text-muted">—</span> }
+                            </td>
+                            <td class="fw-bold text-success fs-6">@item.TongCong.ToString("N0")đ</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-4">Không có hóa đơn nào.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

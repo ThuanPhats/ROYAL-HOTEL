@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - QLKhachSan Premium</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome v6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation Menu -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-hotel me-2"></i>ROYAL HOTEL
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="@Url.Action("Index", "Home")">
+                        <i class="fa-solid fa-gauge"></i>Trang chủ (Dashboard)
+                    </a>
+                </li>
+                
+                <!-- Phân hệ Danh mục -->
+                <li class="sidebar-item mt-3">
+                    <span class="ms-3 text-muted small fw-bold">QUẢN TRỊ DANH MỤC</span>
+                </li>
+                <li class="sidebar-item">
+                    <a href="@Url.Action("Customers", "Catalog")">
+                        <i class="fa-solid fa-users"></i>Khách hàng
+                    </a>
+                </li>
+                @if (Context.Session.GetString("VaiTro") == "Admin" || Context.Session.GetString("VaiTro") == "QuanLy")
+                {
+                    <li class="sidebar-item">
+                        <a href="@Url.Action("Rooms", "Catalog")">
+                            <i class="fa-solid fa-door-open"></i>Phòng
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="@Url.Action("RoomTypes", "Catalog")">
+                            <i class="fa-solid fa-bed"></i>Loại phòng
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="@Url.Action("Amenities", "Catalog")">
+                            <i class="fa-solid fa-tv"></i>Tiện nghi
+                        </a>
+                    </li>
+                }
+                
+                <!-- Phân hệ Lễ tân -->
+                <li class="sidebar-item mt-3">
+                    <span class="ms-3 text-muted small fw-bold">FRONT DESK (LỄ TÂN)</span>
+                </li>
+                <li class="sidebar-item">
+                    <a href="@Url.Action("CreateBooking", "FrontDesk")">
+                        <i class="fa-solid fa-calendar-plus"></i>Lập phiếu đặt phòng
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="@Url.Action("CheckIn", "FrontDesk")">
+                        <i class="fa-solid fa-bell-concierge"></i>Nhận phòng (Check-in)
+                    </a>
+                </li>
+                
+                <!-- Phân hệ Dịch vụ & Thanh toán -->
+                <li class="sidebar-item mt-3">
+                    <span class="ms-3 text-muted small fw-bold">DỊCH VỤ & THANH TOÁN</span>
+                </li>
+                @if (Context.Session.GetString("VaiTro") == "Admin" || Context.Session.GetString("VaiTro") == "QuanLy")
+                {
+                    <li class="sidebar-item">
+                        <a href="@Url.Action("Services", "Catalog")">
+                            <i class="fa-solid fa-martini-glass-citrus"></i>Danh mục dịch vụ
+                        </a>
+                    </li>
+                }
+                <li class="sidebar-item">
+                    <a href="@Url.Action("OrderService", "ServiceBilling")">
+                        <i class="fa-solid fa-utensils"></i>Gọi dịch vụ (Order)
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="@Url.Action("CheckOut", "ServiceBilling")">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>Trả phòng & Thanh toán
+                    </a>
+                </li>
+
+                <!-- Phân hệ Báo cáo & Quản trị -->
+                @if (Context.Session.GetString("VaiTro") == "Admin" || Context.Session.GetString("VaiTro") == "QuanLy")
+                {
+                    <li class="sidebar-item mt-3">
+                        <span class="ms-3 text-muted small fw-bold">BÁO CÁO & QUẢN TRỊ</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="@Url.Action("AllBookings", "Reports")">
+                            <i class="fa-solid fa-calendar-days"></i>Phiếu đặt phòng
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="@Url.Action("InvoiceHistory", "Reports")">
+                            <i class="fa-solid fa-file-invoice"></i>Lịch sử hóa đơn
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="@Url.Action("Promotions", "Reports")">
+                            <i class="fa-solid fa-tags"></i>Khuyến mãi
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="@Url.Action("RevenueReport", "ServiceBilling")">
+                            <i class="fa-solid fa-chart-pie"></i>Báo cáo doanh thu
+                        </a>
+                    </li>
+                }
+            </ul>
+            <div class="p-3 border-top border-secondary text-center small text-muted">
+                v2.0.0 (15 Bảng) &copy; 2026
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="navbar-custom">
+                <div class="d-flex align-items-center">
+                    <h4 class="m-0 font-weight-bold" style="font-family: 'Outfit', sans-serif;">@ViewData["Title"]</h4>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-regular fa-circle-user me-2 fs-5 text-primary"></i>
+                            <span>Xin chào, <strong>@(Context.Session.GetString("HoTen") ?? "Khách")</strong></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userDropdown">
+                            <li>
+                                <span class="dropdown-item-text text-muted small">
+                                    <i class="fa-solid fa-shield-halved me-1"></i>
+                                    @(Context.Session.GetString("VaiTro") ?? "")
+                                </span>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+                        <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                        <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

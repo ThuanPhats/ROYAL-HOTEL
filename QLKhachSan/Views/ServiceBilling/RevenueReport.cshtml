@@ -1,0 +1,351 @@
+@{
+    ViewData["Title"] = "Báo Cáo Doanh Thu";
+}
+
+<style>
+    .premium-card {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        transition: all 0.4s ease;
+        overflow: hidden;
+    }
+    
+    .premium-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card-gradient-1 {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        color: white;
+    }
+
+    .stat-card-gradient-2 {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+
+    .stat-card-gradient-3 {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+    }
+
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+    }
+    
+    .table-premium {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+    }
+    
+    .table-premium th {
+        background-color: #f8fafc;
+        color: #475569;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        padding: 15px 20px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .table-premium td {
+        padding: 15px 20px;
+        vertical-align: middle;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .table-premium tbody tr:hover {
+        background-color: #f8fafc;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="font-weight-bold mb-0" style="color: #1e293b; font-family: 'Outfit', sans-serif;">
+                Báo cáo Doanh thu
+            </h2>
+            <p class="text-muted mt-1 mb-0">Theo dõi kết quả kinh doanh 7 ngày gần nhất</p>
+        </div>
+        <div>
+            <button class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
+                <i class="fa-solid fa-download me-2"></i>Xuất báo cáo PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="premium-card stat-card-gradient-1 p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="mb-1 opacity-75 fw-semibold text-uppercase" style="letter-spacing: 1px; font-size: 0.85rem;">Doanh thu ước tính</p>
+                        <h3 class="fw-bold mb-0" id="totalRevenueLabel">0 đ</h3>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-top border-light border-opacity-25 d-flex align-items-center">
+                    <span class="badge bg-white text-success rounded-pill me-2"><i class="fa-solid fa-arrow-trend-up me-1"></i>+12.5%</span>
+                    <span class="opacity-75 fs-7">So với tuần trước</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="premium-card stat-card-gradient-2 p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="mb-1 opacity-75 fw-semibold text-uppercase" style="letter-spacing: 1px; font-size: 0.85rem;">Khách phục vụ</p>
+                        <h3 class="fw-bold mb-0">124 <span class="fs-5 opacity-75 fw-normal">lượt</span></h3>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-top border-light border-opacity-25 d-flex align-items-center">
+                    <span class="badge bg-white text-success rounded-pill me-2"><i class="fa-solid fa-arrow-trend-up me-1"></i>+5.2%</span>
+                    <span class="opacity-75 fs-7">Tỷ lệ lấp đầy phòng cao</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="premium-card stat-card-gradient-3 p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="mb-1 opacity-75 fw-semibold text-uppercase" style="letter-spacing: 1px; font-size: 0.85rem;">Đánh giá trung bình</p>
+                        <h3 class="fw-bold mb-0">4.8 <span class="fs-5 opacity-75 fw-normal">/ 5.0</span></h3>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-top border-light border-opacity-25 d-flex align-items-center">
+                    <span class="badge bg-white text-success rounded-pill me-2"><i class="fa-solid fa-arrow-trend-up me-1"></i>+0.3</span>
+                    <span class="opacity-75 fs-7">Chất lượng dịch vụ tốt</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="premium-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-area text-primary me-2"></i>Biểu đồ doanh thu (7 ngày)</h5>
+                </div>
+                <div style="height: 350px; width: 100%;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="premium-card p-4 h-100 d-flex flex-column">
+                <h5 class="fw-bold text-dark mb-4"><i class="fa-solid fa-bolt text-warning me-2"></i>Phân tích nhanh</h5>
+                
+                <div class="flex-grow-1 d-flex flex-column justify-content-center gap-4">
+                    <div class="d-flex align-items-center p-3 rounded-4 bg-light">
+                        <div class="icon-circle bg-white text-primary shadow-sm me-3" style="width: 50px; height: 50px;">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <p class="text-muted mb-0 fs-7">Ngày cao điểm</p>
+                            <h6 class="fw-bold mb-0 text-dark" id="peakDayLabel">Đang tính...</h6>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center p-3 rounded-4 bg-light">
+                        <div class="icon-circle bg-white text-success shadow-sm me-3" style="width: 50px; height: 50px;">
+                            <i class="fa-solid fa-money-bill-trend-up"></i>
+                        </div>
+                        <div>
+                            <p class="text-muted mb-0 fs-7">Trung bình mỗi ngày</p>
+                            <h6 class="fw-bold mb-0 text-dark" id="avgRevenueLabel">Đang tính...</h6>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-auto pt-3">
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <p class="text-muted fs-7 text-center mt-2 mb-0">Đạt 75% mục tiêu tháng</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Data Table -->
+    <div class="premium-card p-4">
+        <h5 class="fw-bold text-dark mb-4"><i class="fa-solid fa-table-list text-info me-2"></i>Bảng chi tiết doanh thu theo ngày</h5>
+        <div class="table-responsive">
+            <table class="table table-premium mb-0" id="revenueTable">
+                <thead>
+                    <tr>
+                        <th width="10%">STT</th>
+                        <th width="30%">Ngày lập</th>
+                        <th width="40%">Tổng doanh thu</th>
+                        <th width="20%">Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- JS sẽ render dòng dữ liệu vào đây -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const ctx = document.getElementById('revenueChart');
+        
+        // Dữ liệu từ ViewBag
+        const labels = @Html.Raw(Json.Serialize(ViewBag.ChartLabels));
+        const data = @Html.Raw(Json.Serialize(ViewBag.ChartData));
+
+        // Format tiền tệ VNĐ
+        const formatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
+        
+        // Tính tổng & TB
+        const totalRev = data.reduce((a, b) => a + b, 0);
+        const avgRev = totalRev / (data.length || 1);
+        
+        // Tìm ngày cao điểm
+        let maxVal = -1;
+        let peakDay = "";
+        data.forEach((val, index) => {
+            if(val > maxVal) {
+                maxVal = val;
+                peakDay = labels[index];
+            }
+        });
+
+        // Cập nhật text UI
+        document.getElementById('totalRevenueLabel').innerText = formatter.format(totalRev);
+        document.getElementById('avgRevenueLabel').innerText = formatter.format(avgRev);
+        document.getElementById('peakDayLabel').innerText = peakDay + (maxVal > 0 ? ` (${formatter.format(maxVal)})` : " (Chưa có)");
+
+        // Render Table
+        const tbody = document.querySelector('#revenueTable tbody');
+        if(data.length === 0 || totalRev === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">Chưa có dữ liệu thanh toán trong 7 ngày qua.</td></tr>`;
+        } else {
+            let tableHtml = '';
+            // Render ngược lại để ngày mới nhất lên trên
+            for(let i = data.length - 1; i >= 0; i--) {
+                const val = data[i];
+                let statusBadge = val > avgRev 
+                    ? '<span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill"><i class="fa-solid fa-arrow-up me-1"></i>Vượt TB</span>'
+                    : (val > 0 ? '<span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill"><i class="fa-solid fa-minus me-1"></i>Bình thường</span>' : '<span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">Không có</span>');
+                    
+                tableHtml += `
+                    <tr>
+                        <td class="fw-bold text-muted">#${data.length - i}</td>
+                        <td class="fw-semibold"><i class="fa-regular fa-calendar me-2 text-muted"></i>${labels[i]}</td>
+                        <td class="fw-bold text-primary">${formatter.format(val)}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = tableHtml;
+        }
+
+        // Tạo gradient cho line chart
+        const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(79, 70, 229, 0.5)'); // Indigo 600
+        gradient.addColorStop(1, 'rgba(79, 70, 229, 0.0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: data,
+                    borderColor: '#4f46e5',
+                    backgroundColor: gradient,
+                    borderWidth: 4,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#4f46e5',
+                    pointBorderWidth: 3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleFont: { size: 14, family: "'Outfit', sans-serif" },
+                        bodyFont: { size: 14, family: "'Outfit', sans-serif" },
+                        padding: 15,
+                        cornerRadius: 10,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (context.parsed.y !== null) {
+                                    return label + ': ' + formatter.format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: { family: "'Outfit', sans-serif" }
+                        }
+                    },
+                    y: {
+                        border: { display: false },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        beginAtZero: true,
+                        ticks: {
+                            font: { family: "'Outfit', sans-serif" },
+                            callback: function(value, index, values) {
+                                if (value === 0) return '0đ';
+                                if (value >= 1000000) return (value / 1000000) + ' Tr';
+                                return (value / 1000) + ' k';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

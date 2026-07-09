@@ -1,0 +1,279 @@
+
+
+BỘ CÔNG THƯƠNG
+TRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP.HCM
+KHOA CÔNG NGHỆ THÔNG TIN
+
+
+
+
+
+
+
+
+
+ BÀI TẬP NHÓM
+THỰC HÀNH PHÂN TÍCH THIẾT KẾ HỆ THỐNG THÔNG TIN
+
+	
+	ĐỀ TÀI: 	
+		
+	
+
+
+
+
+
+	Giảng viên hướng dẫn	:	
+	Sinh viên thực hiện	:
+		1. <Ghi mã sv> – <ghi họ tên>
+		2. <Ghi mã sv> – <ghi họ tên>
+	        		
+	
+
+	TP. HỒ CHÍ MINH – 2025
+
+MỤC LỤC
+(font Time New Roman, size 18, canh giữa, paragraph(line spacing multiple, at 1.3pt) Tạo mục lục tự động)
+CHƯƠNG 1: TỔNG QUAN	4
+1.1. GIỚI THIỆU	4
+1.2. MỤC TIÊU VÀ PHẠM VI ĐỀ TÀI	5
+1.2.1. Mục tiêu đề tài	5
+1.2.2. Phạm vi đề tài	6
+1.3. KHẢO SÁT HỆ THỐNG	7
+Nội dung mục lục: font Time New Roman, size 13. paragraph(line spacing multiple, at 1.3pt, before 3pt, after 3pt)
+…
+
+DANH MỤC CÁC KÝ HIỆU VÀ CHỮ VIẾT TẮT
+(font Time New Roman, size 18, canh giữa, paragraph(line spacing multiple, at 1.3pt)
+
+Trình bày các ký hiệu và chữ viết tắt có trong đồ án/luận văn.
+Ví dụ:
+Viết tắt	Tiếng Anh	Tiếng Việt
+DBMS	Database Management System	Hệ quản trị cơ sở dữ liệu
+…
+
+
+DANH MỤC CÁC HÌNH VẼ VÀ ĐỒ THỊ
+(font Time New Roman, size 18, canh giữa, paragraph(line spacing multiple, at 1.3pt, before 3pt, after 3pt)
+Trình bày danh mục các hình vẽ và đồ thị có trong đồ án/luận văn
+Ví dụ:
+Hình 1.1: Sơ đồ cơ cấu tổ chức	7
+HÌnh 1.2: Mô hình Use Case nghiệp vụ	10
+…
+
+MỞ ĐẦU
+(font Time New Roman, size 18, canh giữa, paragraph(line spacing multiple, at 1.3pt)
+
+Trình bày một cách tổng quát thực trạng vấn đề liên quan đến đề tài, cách tiếp cận của nhóm tác giả, giải quyết được những vấn đề gì khi thực hiện đề tài.
+
+
+CHƯƠNG 1
+(font Time New Roman, size 16, canh giữa, paragraph(line spacing multiple, at 1.3pt)
+TỔNG QUAN
+(font Time New Roman, size 18, canh giữa, paragraph(line spacing multiple, at 1.3pt)
+
+1.1. GIỚI THIỆU 
+(font Time New Roman, size 13, chữ hoa, paragraph(line spacing multiple, at 1.3pt)
+Giới thiệu những vấn đề liên quan đến đề tài, có thể đưa ra những dẫn chứng cụ thể và trình bày lý do chọn đề tài.
+(Nội dung văn bản: font Time New Roman, size 13, paragraph(line spacing multiple, at 1.3pt, before 6pt, after 6pt)
+
+1.2. MỤC TIÊU VÀ PHẠM VI ĐỀ TÀI
+Trình bày mục tiêu mà đề tài phải đạt được, phạm vi giới hạn của đề tài.
+1.3. KHẢO SÁT HỆ THỐNG
+Giới thiệu sơ lược về hệ thống thông tin, cơ cấu tổ chức của hệ thống.
+Trình bày chi tiết quy trình nghiệp vụ diễn ra bên trong hệ thống.
+Trình bày các biểu mẫu thu thập được trong quá trình khảo sát.
+1.4. KẾT CHƯƠNG
+Trình bày ngắn gọn những kết quả đã đạt được trong chương 1 và chuyển ý dẫn nhập vào chương 2
+CHƯƠNG 2
+PHÂN TÍCH HỆ THỐNG
+
+2.1. GIỚI THIỆU
+Trình bày sự cần thiết và tầm quan trọng của giai đoạn phân tích trong qui trình phân tích thiết kế hệ thống thông tin.
+2.2.  MÔ HÌNH HÓA NGHIỆP VỤ
+2.2.1. Sơ đồ Use-Case nghiệp vụ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2.1.2. Mô hình hóa quy trình nghiệp vụ 
+2.1.2.1. Mô hình hóa quy trình nghiệp vụ Mượn sách
+a. Bằng văn bản
+
+b.  Bằng sơ đồ hoạt động 
+
+c.  Bằng sơ đồ tương tác (gồm sơ đồ tuần tự và sơ đồ cộng tác)
+Vẽ sơ đồ tuần tự và sơ đồ cộng tác cho từng use case nghiệp vụ vào đây.
+2.1.2.2. Mô hình hóa quy trình nghiệp vụ Trả sách
+2.1.2.3. Mô hình hóa quy trình nghiệp vụ Đăng ký thành viên
+…..
+Thực hiện tương tự quy trình nghiệp vụ Mượn sách
+
+
+2.3. MÔ HÌNH HÓA CHỨC NĂNG
+2.3.1. Sơ đồ Use Case hệ thống 
+
+Chụp hình sơ đồ Use case hệ thống vào đây
+
+2.3.2. Đặc tả Use Case hệ thống 
+Đặc tả cho từng Use Case hệ thống
+Tên use case
+
+Tóm tắt
+
+Tác nhân
+
+Use case liên quan
+
+Dòng sự kiện chính
+
+Dòng sự kiện phụ
+
+Điều kiện tiên quyết
+
+Hậu điều kiện
+
+
+2.4. SƠ ĐỒ LỚP MỨC PHÂN TÍCH 
+Sơ đồ lớp phân tích (thể hiện các đối tượng dữ liệu) cho cả hệ thống.
+	
+	Chụp hình sơ đồ lớp mức phân tích vào đây
+
+2.5. KẾT CHƯƠNG
+
+CHƯƠNG 3
+THIẾT KẾ HỆ THỐNG
+
+3.1. GIỚI THIỆU
+Trình bày sự cần thiết và tầm quan trọng của giai đoạn thiết kế trong qui trình phân tích thiết kế hệ thống thông tin.
+3.2. THIẾT KẾ CSDL
+Chuyển đổi từ sơ đồ lớp mức phân tích sang mô hình dữ liệu quan hệ.
+
+Kết quả: Copy Sơ đồ Diagram trong SQL Server vào đây.
+3.3. THIẾT KẾ GIAO DIỆN HỆ THỐNG
+3.3.1. Chức năng Mượn sách (Bạn Bảo Ngọc làm)
+
+Chụp hình giao diện vào đây
+
+3.3.2. Chức năng Trả sách (Bạn Thiên Lâm làm)
+
+Chụp hình giao diện vào đây
+………………….
+3.4. SƠ ĐỒ LỚP Ở MỨC THIẾT KẾ
+Chụp hình sơ đồ lớp mức thiết kế vào đây
+
+3.5. THIẾT KẾ CHỨC NĂNG HỆ THỐNG
+3.5.2. Thiết kế chức năng Mượn sách (bạn Bảo Ngọc làm)
+Xây dựng sơ đồ lớp ở mức thiết kế 
+Chụp hình sơ đồ lớp chi tiết cho chức năng Mượn sách vào đây
+Dùng sơ đồ tuần tự để thiết kế hoạt động cho chức năng đó
+Chụp hình sơ đồ lớp tuần tự cho chức năng Mượn sách vào đây
+
+3.5.2. Chức năngTtrả sách (bạn Thiên Lâm làm)
+Xây dựng sơ đồ lớp ở mức thiết kế theo mô hình 3 lớp (tầng giao diện, tầng nghiệp vụ và tầng truy cập dữ liệu) 
+
+Chụp hình sơ đồ lớp chi tiết cho chức năng Trả sách vào đây
+
+Dùng sơ đồ tuần tự để thiết kế hoạt động cho chức năng đó
+Chụp hình sơ đồ lớp tuần tự cho chức năng Trả sách vào đây
+………………………..
+
+CHƯƠNG 4
+CÀI ĐẶT
+
+CHƯƠNG 5
+KẾT LUẬN
+Trình bày tóm tắt về kết quả đã thực hiện
+
+
+
+
+
+TÀI LIỆU THAM KHẢO
+Tiếng Việt
+[1] Nguyễn Xuân Huy, Lê Hoài Bắc, Bài tập cơ sở dữ liệu, Nhà xuất bản Thống kê, 2003.
+[2] Nguyễn Thiện Tâm, Trần xuân Hải, Giáo trình SQL Server 2000 (Giáo trình nội bộ), Đại học Quốc gia TP.HCM, Đại học Khoa học tự nhiên, 2004
+[3] Hồ Thuần, Hồ Cẩm Hà, Các hệ cơ sở dữ liệu Lý thuyết và thực hành, Nhà xuất bản giáo dục, 2007
+Tiếng Anh
+[4] David Maier, The Theori of Relation Databases, Computer Science Press, 1988
+[5] Jeffrey D.Ullman, The principles of database and knowledge base system Vol1, 2, Computer Science Press, 1989
+[6] Ramez Elmasri, Shamkant B. Navathe, Fundamentals of Database Systems, International Editor, 1997
+Website
+[7]  HYPERLINK "http://www.futabuslines.com.vn/" http://www.futabuslines.com.vn/ 
+[8]  HYPERLINK "http://msdn.microsoft.com/en-us/library/aa286485.aspx" http://msdn.microsoft.com/en-us/library/aa286485.aspx
+
+PHỤ LỤC
+
+QUI ĐỊNH VỀ HÌNH THỨC TRÌNH BÀY
+Đồ án phải được trình bày ngắn gọn, rõ ràng, mạch lạc, sạch sẽ, không được tẩy xoá, có đánh số trang (phía trên canh giữa, bắt đầu từ trang mở đầu), đánh số bảng biểu (phía trên bảng), hình vẽ (phía dưới hình). Nếu bảng vẽ hay hình ảnh được lấy từ một nguồn nào đó thì phải ghi rõ trích dẫn cụ thể.
+Ví dụ: 
+
+Hình 2.1: Tạo rule mới
+(trong đó số 2 là thứ tự chương, 1 là thứ tự hình trong chương)
+
+Bảng 3.2: Định dạng hiển thị kiểu dữ liệu ngày tháng
+Định dạng năm (yy)
+Định dạng năm (yyyy)
+Dạng hiển thị dữ liệu
+1
+101
+mm/dd/yy
+2
+102
+yy.mm.dd
+
+Nội dung văn bản trình bày font chữ Time New Roman, cỡ 13, paragraph(multiple at 1.3, before 6pt, after 6pt). Mật độ chữ bình thường, không được nén hoặc kéo dãn khoảng cách giữa các chữ. Lề trên 3cm, lề dưới 3cm, lề trái 3.5cm, lề phải 2cm
+Đồ án được in trên một mặt giấy trắng khổ A4 (210 x 297 mm).
+Mọi ý kiến, khái niệm có ý nghĩa, mang tính chất gợi ý không phải của riêng tác giả và mọi tham khảo khác phải được trích dẫn và chỉ rõ nguồn trong danh mục Tài liệu tham khảo của luận văn.
+Bắt đầu mỗi chương phải sang trang mới.
+QUI ĐỊNH GHI TÀI LIỆU THAM KHẢO
+Nếu có cả tài liệu tiếng Việt và tiếng Anh thì ghi tài liệu tiếng Việt trước, khi hết tài liệu tiếng Việt mới ghi tài liệu tiếng Anh. Nếu sử dụng tài liệu là một website thì ghi địa chỉ website sau khi ghi xong tài liệu tiếng Việt và tiếng Anh.
+Sắp xếp theo thứ tự ABC theo tên tác giả nếu là người Việt, theo họ nếu người nước ngoài.
+Ghi tài liệu tham khảo theo cấu trúc như sau:
+[số thứ tự tài liệu] Tên tác giả, tên tài liệu, nhà xuất bản, năm xuất bản.
+Ví dụ: 
+TÀI LIỆU THAM KHẢO
+Tiếng Việt
+[1] Nguyễn Xuân Huy, Lê Hoài Bắc, Bài tập cơ sở dữ liệu, Nhà xuất bản Thống kê, 2003.
+[2] Nguyễn Thiện Tâm, Trần xuân Hải, Giáo trình SQL Server 2000 (Giáo trình nội bộ), Đại học Quốc gia TP.HCM, Đại học Khoa học tự nhiên, 2004
+[3] Hồ Thuần, Hồ Cẩm Hà, Các hệ cơ sở dữ liệu Lý thuyết và thực hành, Nhà xuất bản giáo dục, 2007
+Tiếng Anh
+[4] David Maier, The Theori of Relation Databases, Computer Science Press, 1988
+[5] Jeffrey D.Ullman, The principles of database and knowledge base system Vol1, 2, Computer Science Press, 1989
+[6] Ramez Elmasri, Shamkant B. Navathe, Fundamentals of Database Systems, International Editor, 1997
+Website
+[7]  HYPERLINK "http://www.futabuslines.com.vn/" http://www.futabuslines.com.vn/ 
+[8]  HYPERLINK "http://msdn.microsoft.com/en-us/library/aa286485.aspx" http://msdn.microsoft.com/en-us/library/aa286485.aspx
+
+
+
+
+
+
+
+
+
+
+
+PAGE  
+
+
+PAGE  2
+
+
+
+
